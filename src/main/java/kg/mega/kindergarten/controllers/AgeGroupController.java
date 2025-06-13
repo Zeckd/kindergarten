@@ -1,0 +1,48 @@
+package kg.mega.kindergarten.controllers;
+
+import kg.mega.kindergarten.controllers.cruds.CRUDController;
+import kg.mega.kindergarten.enums.Delete;
+import kg.mega.kindergarten.models.AgeGroup;
+import kg.mega.kindergarten.models.dtos.AgeGroupCreateDto;
+import kg.mega.kindergarten.models.dtos.AgeGroupDto;
+import kg.mega.kindergarten.services.AgeGroupService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+@RestController
+@RequestMapping("/ageGroup")
+public class AgeGroupController implements CRUDController<AgeGroupDto, AgeGroupCreateDto, AgeGroup> {
+    private final AgeGroupService ageGroupService;
+
+    public AgeGroupController(AgeGroupService ageGroupService) {
+        this.ageGroupService = ageGroupService;
+    }
+
+    @Override
+    public AgeGroupDto create(AgeGroupCreateDto ageGroupCreateDto) {
+        return ageGroupService.create(ageGroupCreateDto);
+    }
+
+    @Override
+    public AgeGroupDto update(AgeGroupDto ageGroupDto, Delete delete) {
+        return ageGroupService.update(ageGroupDto, delete);
+    }
+
+    @Override
+    public AgeGroupDto delete(Long id) {
+        return ageGroupService.delete(id);
+    }
+
+    @Override
+    public List<AgeGroupDto> allList(int page, int size) {
+        return ageGroupService.allList(page, size);
+    }
+
+   
+
+    @Override
+    public AgeGroup findById(Long id) {
+        return ageGroupService.findById(id);
+    }
+}
