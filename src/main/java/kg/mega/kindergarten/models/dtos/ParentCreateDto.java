@@ -4,7 +4,10 @@ import kg.mega.kindergarten.enums.Role;
 import kg.mega.kindergarten.models.Contact;
 
 public record ParentCreateDto(
+        String firstName,
+        String lastName,
+        String patronymic,
         Role role,
-        Long contact
+        ContactCreateDto contactCreate
 ) {
 }

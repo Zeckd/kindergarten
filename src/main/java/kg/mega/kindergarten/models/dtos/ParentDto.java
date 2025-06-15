@@ -7,6 +7,9 @@ import kg.mega.kindergarten.models.Contact;
 
 public record ParentDto(
         Long id,
+        String firstName,
+        String lastName,
+        String patronymic,
         Role role,
         Contact contact
 ) {

@@ -7,6 +7,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record ChildCreateDto (
+        String firstName,
+        String lastName,
+        String patronymic,
         LocalDate dateOfBirth,
         Long group,
         List<Long> parents

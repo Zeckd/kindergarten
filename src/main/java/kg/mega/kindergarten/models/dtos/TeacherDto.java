@@ -9,6 +9,9 @@ import java.time.LocalDate;
 
 public record TeacherDto(
         Long id,
+        String firstName,
+        String lastName,
+        String patronymic,
         Position position,
         LocalDate dateOfBirth,
         Contact contact

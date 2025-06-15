@@ -2,6 +2,7 @@ package kg.mega.kindergarten.controllers;
 
 import kg.mega.kindergarten.controllers.cruds.CRUDController;
 import kg.mega.kindergarten.enums.Delete;
+import kg.mega.kindergarten.enums.Position;
 import kg.mega.kindergarten.models.Teacher;
 import kg.mega.kindergarten.models.dtos.TeacherCreateDto;
 import kg.mega.kindergarten.models.dtos.TeacherDto;
@@ -21,9 +22,14 @@ public class TeacherController implements CRUDController<TeacherDto, TeacherCrea
         this.teacherService = teacherService;
     }
 
+
+    public  TeacherDto create(TeacherCreateDto teacherCreateDto, Position position) {
+        return teacherService.create(teacherCreateDto, position) ;
+    }
+
     @Override
     public TeacherDto create(TeacherCreateDto teacherCreateDto) {
-        return teacherService.create(teacherCreateDto) ;
+        return null;
     }
 
     @Override

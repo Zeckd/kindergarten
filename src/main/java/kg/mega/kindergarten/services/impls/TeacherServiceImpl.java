@@ -4,6 +4,8 @@ import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.mappers.TeacherMapper;
 import kg.mega.kindergarten.models.Contact;
 import kg.mega.kindergarten.models.Teacher;
+import kg.mega.kindergarten.models.dtos.ContactCreateDto;
+import kg.mega.kindergarten.models.dtos.ContactDto;
 import kg.mega.kindergarten.models.dtos.TeacherCreateDto;
 import kg.mega.kindergarten.models.dtos.TeacherDto;
 import kg.mega.kindergarten.repositories.TeacherRepo;
@@ -29,10 +31,10 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherDto create(TeacherCreateDto teacherCreateDto) {
-        Contact contact = contactService.findById(teacherCreateDto.contactId());
+        ContactDto contact = contactService.create(teacherCreateDto.contactCreate());
         Teacher teacher = TeacherMapper.INSTANCE.teacherCreateDtoToTeacher(teacherCreateDto);
         teacher = teacherRepo.save(teacher);
-        teacher.setContact(contact);
+
 
 
 

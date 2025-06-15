@@ -12,6 +12,9 @@ import java.util.List;
 
 public record ChildDto(
          Long id,
+         String firstName,
+         String lastName,
+         String patronymic,
          LocalDate dateOfBirth,
         Group group,
         List<Parent> parents
