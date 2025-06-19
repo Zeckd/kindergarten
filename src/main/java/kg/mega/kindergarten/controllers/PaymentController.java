@@ -1,40 +1,55 @@
 package kg.mega.kindergarten.controllers;
 
 import kg.mega.kindergarten.controllers.cruds.CRUDController;
+import kg.mega.kindergarten.controllers.cruds.CRUDControllerWithStatus;
 import kg.mega.kindergarten.enums.Delete;
+import kg.mega.kindergarten.enums.PaymentType;
+import kg.mega.kindergarten.models.Payment;
 import kg.mega.kindergarten.models.Payment;
 import kg.mega.kindergarten.models.dtos.PaymentCreateDto;
 import kg.mega.kindergarten.models.dtos.PaymentDto;
+import kg.mega.kindergarten.models.dtos.PaymentCreateDto;
+import kg.mega.kindergarten.models.dtos.PaymentDto;
+import kg.mega.kindergarten.services.PaymentService;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 @RestController
-@RequestMapping("/payment")
-public class PaymentController implements CRUDController<PaymentDto, PaymentCreateDto, Payment> {
-    @Override
-    public PaymentDto create(PaymentCreateDto paymentCreateDto) {
-        return null;
+@RequestMapping("/api/payment")
+public class PaymentController implements CRUDControllerWithStatus<PaymentDto, PaymentCreateDto, Payment, PaymentType> {
+    private final PaymentService paymentService;
+
+    public PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
     }
+
+    @PostMapping("/create")
+    public PaymentDto create(PaymentCreateDto paymentCreateDto, PaymentType paymentType) {
+        return paymentService.create(paymentCreateDto, paymentType) ;
+    }
+
 
     @Override
     public PaymentDto update(PaymentDto paymentDto, Delete delete) {
-        return null;
+        return paymentService.update(paymentDto, delete);
     }
 
     @Override
     public PaymentDto delete(Long id) {
-        return null;
+        return paymentService.delete(id);
     }
 
     @Override
-    public List<PaymentDto> allList(int page, int size) {
-        return List.of();
+    public List<Payment> allList(int page, int size) {
+        return paymentService.findAllList(page,size);
     }
+
 
 
     @Override
     public Payment findById(Long id) {
-        return null;
+        return paymentService.findById(id);
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public interface AgeGroupService {
     AgeGroupDto create(AgeGroupCreateDto ageGroupCreateDto);
 
-    List<AgeGroupDto> allList(int page, int size);
+    List<AgeGroup> allList(int page, int size);
 
     AgeGroupDto delete(Long id);
 

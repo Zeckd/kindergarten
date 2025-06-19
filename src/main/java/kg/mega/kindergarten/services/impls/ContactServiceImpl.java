@@ -24,10 +24,10 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public ContactDto create(ContactCreateDto contactCreateDto) {
+    public Contact create(ContactCreateDto contactCreateDto) {
         Contact contact = ContactMapper.INSTANCE.contactCreateDtoToContact(contactCreateDto);
-        contact = contactRepo.save(contact);
-        return ContactMapper.INSTANCE.contactToContactDto(contact) ;
+        return contactRepo.save(contact);
+
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public List<ContactDto> findAllList(int page, int size) {
+    public List<Contact> findAllList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         return contactRepo.findAllList(pageable);
 

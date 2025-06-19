@@ -1,7 +1,6 @@
 package kg.mega.kindergarten.repositories;
 
 import kg.mega.kindergarten.models.AgeGroup;
-import kg.mega.kindergarten.models.dtos.AgeGroupDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +15,6 @@ public interface AgeGroupRepo extends JpaRepository<AgeGroup, Long> {
     AgeGroup findByIdAgeGroup(Long id);
 
 
-    @Query("select new kg.mega.kindergarten.models.dtos.AgeGroupDto(u.id, u.name, u.price) from  AgeGroup u where u.delete = 0")
-    List<AgeGroupDto> findAllList(Pageable pageable);
+    @Query("select u from  AgeGroup u where u.delete = 0")
+    List<AgeGroup> findAllList(Pageable pageable);
 }

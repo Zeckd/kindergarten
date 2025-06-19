@@ -10,8 +10,8 @@ public record ChildCreateDto (
         String firstName,
         String lastName,
         String patronymic,
-        LocalDate dateOfBirth,
         Long group,
+        LocalDate dateOfBirth,
         List<Long> parents
 ){
 

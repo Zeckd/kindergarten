@@ -7,7 +7,6 @@ public record ParentCreateDto(
         String firstName,
         String lastName,
         String patronymic,
-        Role role,
         ContactCreateDto contactCreate
 ) {
 }

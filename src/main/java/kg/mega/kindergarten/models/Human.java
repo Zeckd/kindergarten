@@ -1,5 +1,8 @@
 package kg.mega.kindergarten.models;
 
+import jakarta.persistence.MappedSuperclass;
+
+@MappedSuperclass
 public abstract class Human {
     private String firstName;
     private String lastName;

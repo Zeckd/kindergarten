@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 @RestController
-@RequestMapping("/ageGroup")
+@RequestMapping("/api/age-group")
 public class AgeGroupController implements CRUDController<AgeGroupDto, AgeGroupCreateDto, AgeGroup> {
     private final AgeGroupService ageGroupService;
 
@@ -35,7 +35,7 @@ public class AgeGroupController implements CRUDController<AgeGroupDto, AgeGroupC
     }
 
     @Override
-    public List<AgeGroupDto> allList(int page, int size) {
+    public List<AgeGroup> allList(int page, int size) {
         return ageGroupService.allList(page, size);
     }
 

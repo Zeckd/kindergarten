@@ -1,11 +1,10 @@
 package kg.mega.kindergarten.services.impls;
 
 import kg.mega.kindergarten.enums.Delete;
+import kg.mega.kindergarten.enums.Position;
 import kg.mega.kindergarten.mappers.TeacherMapper;
 import kg.mega.kindergarten.models.Contact;
 import kg.mega.kindergarten.models.Teacher;
-import kg.mega.kindergarten.models.dtos.ContactCreateDto;
-import kg.mega.kindergarten.models.dtos.ContactDto;
 import kg.mega.kindergarten.models.dtos.TeacherCreateDto;
 import kg.mega.kindergarten.models.dtos.TeacherDto;
 import kg.mega.kindergarten.repositories.TeacherRepo;
@@ -30,9 +29,11 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public TeacherDto create(TeacherCreateDto teacherCreateDto) {
-        ContactDto contact = contactService.create(teacherCreateDto.contactCreate());
+    public TeacherDto create(TeacherCreateDto teacherCreateDto, Position position) {
+        Contact contact = contactService.create(teacherCreateDto.contactCreate());
         Teacher teacher = TeacherMapper.INSTANCE.teacherCreateDtoToTeacher(teacherCreateDto);
+        teacher.setContact(contact);
+        teacher.setPosition(position);
         teacher = teacherRepo.save(teacher);
 
 
@@ -52,7 +53,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<TeacherDto> findAllList(int page, int size) {
+    public List<Teacher> findAllList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         return teacherRepo.findAllList(pageable);
 
@@ -73,5 +74,10 @@ public class TeacherServiceImpl implements TeacherService {
     public Teacher findById(Long id) {
         return teacherRepo.findByIdTeacher(id);
 
+    }
+
+    @Override
+    public Teacher findByIdForGroup(Long id, Position position) {
+        return teacherRepo.findByIdTeacher(id);
     }
 }

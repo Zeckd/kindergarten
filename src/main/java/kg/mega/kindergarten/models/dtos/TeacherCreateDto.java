@@ -9,7 +9,6 @@ public record TeacherCreateDto (
         String firstName,
         String lastName,
         String patronymic,
-        Position position,
         LocalDate dateOfBirth,
         ContactCreateDto contactCreate
 

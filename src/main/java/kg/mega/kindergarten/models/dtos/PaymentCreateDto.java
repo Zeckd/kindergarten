@@ -1,5 +1,7 @@
 package kg.mega.kindergarten.models.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import kg.mega.kindergarten.enums.PaymentType;
 import kg.mega.kindergarten.models.Child;
 
@@ -7,9 +9,9 @@ import java.time.LocalDateTime;
 
 public record PaymentCreateDto(
         Long child,
-        double paymentSum,
+        @JsonIgnore
         LocalDateTime paymentDate,
-        String period,
-        PaymentType paymentType
+        @Schema(type = "string", pattern = "MM.yyyy", example = "10.2024")
+        String period
 ) {
 }

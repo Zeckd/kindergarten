@@ -16,11 +16,9 @@ import java.util.List;
 @Mapper
 public interface TeacherMapper {
     TeacherMapper INSTANCE = Mappers.getMapper(TeacherMapper.class);
-    @Mapping(source = "contactId", target = "contact.id")
 
     Teacher teacherCreateDtoToTeacher(TeacherCreateDto teacherCreateDto);
 
-    @Mapping(source = "contact.id", target = "contactId")
     TeacherCreateDto teacherToTeacherCreateDto(Teacher teacher);
 
 
@@ -28,8 +26,6 @@ public interface TeacherMapper {
 
     TeacherDto teacherToTeacherDto(Teacher teacher);
 
-   // @Mapping(source = "contactId", target = "contact.id")
-   // @Mapping(source = "teacherId", target = "id")
     Teacher teacherDtoToTeacher(TeacherDto teacherDto);
 
     List<TeacherDto> teacherToTeacherDto(List<Teacher> teacher);

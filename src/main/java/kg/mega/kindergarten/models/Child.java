@@ -1,6 +1,8 @@
 package kg.mega.kindergarten.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.*;
 import kg.mega.kindergarten.enums.Delete;
 
@@ -15,17 +17,21 @@ public class Child extends Human{
     private Long id;
     private LocalDate dateOfBirth;
     @ManyToOne
-    @JoinColumn (name = "group_id", nullable = false)
+    @JoinColumn (name = "group_id")
+    @JsonIgnoreProperties({"children"})
     private Group group;
     @ManyToMany
     @JoinTable(name = "child_parents",
             joinColumns = @JoinColumn(name = "child_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "parent_id", nullable = false)
     )
-
     private List<Parent> parents;
     @JsonIgnore
     private Delete delete = Delete.ACTIVE;
+
+    public void setGroupId(Group group) {
+        this.group = group;
+    }
 
     public Delete getDelete() {
         return delete;

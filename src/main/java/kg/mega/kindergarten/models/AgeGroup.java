@@ -11,11 +11,19 @@ public class AgeGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private int ageGroup;
     private double price;
 
     @JsonIgnore
     private Delete delete = Delete.ACTIVE;
 
+    public int getAgeGroup() {
+        return ageGroup;
+    }
+
+    public void setAgeGroup(int ageGroup) {
+        this.ageGroup = ageGroup;
+    }
 
     public double getPrice() {
         return price;

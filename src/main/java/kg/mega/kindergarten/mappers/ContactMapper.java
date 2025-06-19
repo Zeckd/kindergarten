@@ -13,6 +13,8 @@ public interface ContactMapper {
     ContactMapper INSTANCE = Mappers.getMapper(ContactMapper.class);
 
     Contact contactCreateDtoToContact(ContactCreateDto contactCreateDto);
+    ContactCreateDto contactToContactCreateDto(Contact contact);
+
 
     ContactDto contactToContactDto(Contact contact);
 

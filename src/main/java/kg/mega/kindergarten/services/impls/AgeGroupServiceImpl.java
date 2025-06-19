@@ -31,7 +31,7 @@ public class AgeGroupServiceImpl implements AgeGroupService {
     }
 
     @Override
-    public List<AgeGroupDto> allList(int page, int size) {
+    public List<AgeGroup> allList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         return ageGroupRepo.findAllList(pageable);
 
