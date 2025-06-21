@@ -13,7 +13,7 @@ public record AgeGroupCreateDto (
         int ageGroup,
 
         @Positive(message = "Цена должна быть положительным числом")
-                @NotBlank
+
         double price
 ){
 }
