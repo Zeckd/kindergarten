@@ -26,6 +26,7 @@ public record ChildCreateDto (
         @Past(message = "Дата рождения должна быть в прошлом")
         @Schema(description = "Дата рождения ребенка", example = "2015-06-21", required = true, type = "string",format = "date")
         LocalDate dateOfBirth,
+        Long group,
         List<Long> parentsId
 ){
 
