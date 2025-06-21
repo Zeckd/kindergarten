@@ -97,16 +97,18 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
     public ChildGroupHistoryDebtDto findDebtByChildId(Long childId) {
         Child child = childService.findById(childId);
         ChildGroupHistory childGroupHistory = childGroupHistoryRepo.findTopByChildIdOrderByEndDateDesc(child.getId());
-        Payment payment = paymentService.findByChildId(child.getId());
         LocalDate startDate = childGroupHistory.getStartDate().toLocalDate();
         double price = childGroupHistory.getPrice();
         LocalDate lastDayOfMonth = startDate.withDayOfMonth(startDate.lengthOfMonth());
         int totalWorkingDays = countWorkingDays(startDate.withDayOfMonth(1), lastDayOfMonth);
         int actualWorkingDays = countWorkingDays(startDate, lastDayOfMonth);
+        int month = startDate.getMonthValue();
+        int year = startDate.getYear();
+        double paymentSum = paymentService.sumPaymentsByChildIdAndMonth(childId, month, year);
 
         double dailyRate = price / totalWorkingDays;
         double count = dailyRate * actualWorkingDays;
-        double debt = Math.round((count - payment.getPaymentSum()));
+        double debt = Math.round((count - paymentSum));
         ChildGroupHistoryDebtDto dto = new ChildGroupHistoryDebtDto();
         dto.setChildId(child.getId());
         if (debt <= 0) {

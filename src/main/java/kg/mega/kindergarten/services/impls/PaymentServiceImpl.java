@@ -77,4 +77,8 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment findByChildId(Long child) {
         return paymentRepo.findTopByChildIdOrderByPaymentDateDesc(child);
     }
+    @Override
+    public double sumPaymentsByChildIdAndMonth(Long child, int month, int year) {
+        return paymentRepo.sumPaymentsByChildIdAndMonth(child, month, year);
+    }
 }
