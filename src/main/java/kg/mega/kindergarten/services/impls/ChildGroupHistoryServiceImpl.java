@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 
@@ -46,7 +47,11 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
         if (payment.getPaymentDate() == null) {
             throw new RuntimeException("У ребенка нет платежей");
         }
-        childGroupHistory.setEndDate(payment.getPaymentDate().plusMonths(1).minusSeconds(1));
+        childGroupHistory.setEndDate(payment.getPaymentDate()
+                .toLocalDate()
+                .plusMonths(1)
+                .withDayOfMonth(1)
+                .atStartOfDay());
         childGroupHistory.setGroup(child.getGroup());
         childGroupHistory.setChild(child);
         childGroupHistory.setPrice(child.getGroup().getAgeGroup().getPrice());
@@ -95,21 +100,13 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
         Payment payment = paymentService.findByChildId(child.getId());
         LocalDate startDate = childGroupHistory.getStartDate().toLocalDate();
         double price = childGroupHistory.getPrice();
-        int daysInMonth = startDate.lengthOfMonth();
         LocalDate lastDayOfMonth = startDate.withDayOfMonth(startDate.lengthOfMonth());
-        long workingDays = 0;
-        LocalDate date = startDate;
-        while (!date.isAfter(lastDayOfMonth)) {
-            DayOfWeek day = date.getDayOfWeek();
-            if (day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY) {
-                workingDays++;
-            }
-            date = date.plusDays(1);
-        }
+        int totalWorkingDays = countWorkingDays(startDate.withDayOfMonth(1), lastDayOfMonth);
+        int actualWorkingDays = countWorkingDays(startDate, lastDayOfMonth);
 
-        double count = (price / daysInMonth) * workingDays;
-
-        double debt = (count - payment.getPaymentSum());
+        double dailyRate = price / totalWorkingDays;
+        double count = dailyRate * actualWorkingDays;
+        double debt = Math.round((count - payment.getPaymentSum()));
         ChildGroupHistoryDebtDto dto = new ChildGroupHistoryDebtDto();
         dto.setChildId(child.getId());
         if (debt <= 0) {
@@ -119,5 +116,13 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
             dto.setDebtAmount(debt);
         }
         return dto;
+    }
+
+
+    private int countWorkingDays(LocalDate from, LocalDate to) {
+        return (int) Stream.iterate(from, d -> !d.isAfter(to), d -> d.plusDays(1))
+                .filter(d -> d.getDayOfWeek() != DayOfWeek.SATURDAY &&
+                        d.getDayOfWeek() != DayOfWeek.SUNDAY)
+                .count();
     }
 }

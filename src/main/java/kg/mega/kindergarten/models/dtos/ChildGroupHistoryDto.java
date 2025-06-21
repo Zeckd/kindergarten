@@ -1,5 +1,6 @@
 package kg.mega.kindergarten.models.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -22,11 +23,14 @@ public record ChildGroupHistoryDto(
         Child child,
 
         @NotNull(message = "Дата начала обязательна")
-        @Schema(description = "Дата и время начала периода", example = "2025-06-21T16:19:04")
+        @Schema(description = "Дата и время начала периода", example = "2025-06-21 16:19:04")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
         LocalDateTime startDate,
 
         @NotNull(message = "Дата окончания обязательна")
-        @Schema(description = "Дата и время окончания периода", example = "2025-07-21T16:19:03")
+        @Schema(description = "Дата и время окончания периода", example = "2025-07-21 16:19:03")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime endDate,
 
         @Positive(message = "Цена должна быть положительной")

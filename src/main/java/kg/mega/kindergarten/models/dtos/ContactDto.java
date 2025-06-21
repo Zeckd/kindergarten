@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ContactDto(
 
-        @Schema(description = "Идентификатор контакта", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
         Long id,
 
         @NotBlank(message = "Основной номер телефона обязателен")
