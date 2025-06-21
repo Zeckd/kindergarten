@@ -17,4 +17,6 @@ public interface ChildGroupHistoryRepo extends JpaRepository<ChildGroupHistory, 
 
     @Query("select u from  ChildGroupHistory u where u.delete = 0")
     List<ChildGroupHistory> findAllList(Pageable pageable);
+
+    ChildGroupHistory findTopByChildIdOrderByEndDateDesc(Long childId);
 }

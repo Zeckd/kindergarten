@@ -42,7 +42,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDto create(GroupCreateDto groupCreateDto) {
-        AgeGroup ageGroup = ageGroupService.findById(groupCreateDto.ageGroup());
+        AgeGroup ageGroup = ageGroupService.findById(groupCreateDto.ageGroupId());
 
         Group group = GroupMapper.INSTANCE.groupCreateDtoToGroup(groupCreateDto);
 

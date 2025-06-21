@@ -1,6 +1,7 @@
 package kg.mega.kindergarten.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import kg.mega.kindergarten.enums.Delete;
 
@@ -14,15 +15,27 @@ public class ChildGroupHistory {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = false)
+    @JsonIgnoreProperties({"children"})
     private Group group;
     @ManyToOne
     @JoinColumn(name = "child_id", nullable = false)
+    @JsonIgnoreProperties({"group"})
     private Child child;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private double price;
     @JsonIgnore
+    private double debtAmount;
+    @JsonIgnore
     private Delete delete = Delete.ACTIVE;
+
+    public double getDebtAmount() {
+        return debtAmount;
+    }
+
+    public void setDebtAmount(double debtAmount) {
+        this.debtAmount = debtAmount;
+    }
 
     public Delete getDelete() {
         return delete;

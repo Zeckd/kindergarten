@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface GroupMapper {
     GroupMapper INSTANCE = Mappers.getMapper(GroupMapper.class);
-    @Mapping(source = "ageGroup", target = "ageGroup.id")
+    @Mapping(source = "ageGroupId", target = "ageGroup.id")
 
 
     Group groupCreateDtoToGroup(GroupCreateDto groupCreateDto);

@@ -32,10 +32,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentDto create(PaymentCreateDto paymentCreateDto, PaymentType paymentType) {
-        Child child = childService.findById(paymentCreateDto.child());
+        Child child = childService.findById(paymentCreateDto.childId());
         Payment payment = PaymentMapper.INSTANCE.paymentCreateDtoToPayment(paymentCreateDto);
         payment.setChild(child);
-        payment.setPaymentSum(child.getGroup().getAgeGroup().getPrice());
         payment.setPaymentType(paymentType);
         payment.setPaymentDate(LocalDateTime.now());
         payment = paymentRepo.save(payment);
@@ -72,5 +71,10 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment findById(Long id) {
         return paymentRepo.findByIdPayment(id);
 
+    }
+
+    @Override
+    public Payment findByChildId(Long child) {
+        return paymentRepo.findTopByChildIdOrderByPaymentDateDesc(child);
     }
 }

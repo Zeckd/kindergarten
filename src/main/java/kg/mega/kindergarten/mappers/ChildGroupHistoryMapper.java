@@ -12,8 +12,8 @@ import java.util.List;
 @Mapper
 public interface ChildGroupHistoryMapper {
     ChildGroupHistoryMapper INSTANCE = Mappers.getMapper(ChildGroupHistoryMapper.class);
-    @Mapping(source = "group", target = "group.id")
-    @Mapping(source = "child", target = "child.id")
+    @Mapping(source = "groupId", target = "group.id")
+    @Mapping(source = "childId", target = "child.id")
 
     ChildGroupHistory childGroupHistoryCreateDtoToChildGroupHistory(ChildGroupHistoryCreateDto childGroupHistoryCreateDto);
     ChildGroupHistoryDto childGroupHistoryToChildGroupHistoryDto(ChildGroupHistory childGroupHistory);

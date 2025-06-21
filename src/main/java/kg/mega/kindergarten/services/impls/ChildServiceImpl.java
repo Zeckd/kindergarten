@@ -25,18 +25,16 @@ public class ChildServiceImpl implements ChildService {
     private final ChildRepo childRepo;
     private final ParentService parentService;
     private final GroupService groupService;
-    private final GroupRepo groupRepo;
 
-    public ChildServiceImpl(ChildRepo childRepo, ParentService parentService, GroupService groupService, GroupRepo groupRepo) {
+    public ChildServiceImpl(ChildRepo childRepo, ParentService parentService, GroupService groupService) {
         this.childRepo = childRepo;
         this.parentService = parentService;
         this.groupService = groupService;
-        this.groupRepo = groupRepo;
     }
 
     @Override
     public ChildDto create(ChildCreateDto childCreateDto) {
-        List<Parent> parents = parentService.findAll(childCreateDto.parents());
+        List<Parent> parents = parentService.findAll(childCreateDto.parentsId());
         Group groupId = groupService.findById(childCreateDto.group()) ;
 
         Child child = ChildMapper.INSTANCE.childCreateDtoToChild(childCreateDto ,parents);

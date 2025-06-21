@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 public interface PaymentMapper {
     PaymentMapper INSTANCE = Mappers.getMapper(PaymentMapper.class);
-    @Mapping(source = "child", target = "child.id")
+    @Mapping(source = "childId", target = "child.id")
     Payment paymentCreateDtoToPayment(PaymentCreateDto paymentCreateDto);
     PaymentDto paymentToPaymentDto(Payment payment);
     Payment paymentDtoToPayment(PaymentDto paymentDto);

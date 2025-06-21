@@ -2,6 +2,7 @@ package kg.mega.kindergarten.services;
 
 import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.enums.PaymentType;
+import kg.mega.kindergarten.models.Child;
 import kg.mega.kindergarten.models.Payment;
 import kg.mega.kindergarten.models.dtos.PaymentCreateDto;
 import kg.mega.kindergarten.models.dtos.PaymentDto;
@@ -18,4 +19,6 @@ public interface PaymentService {
     List<Payment> findAllList(int page, int size);
 
     Payment findById(Long id);
+
+    Payment findByChildId(Long child);
 }

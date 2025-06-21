@@ -17,4 +17,6 @@ public interface PaymentRepo extends JpaRepository<Payment, Long> {
 
     @Query("select u from  Payment u where u.delete = 0")
     List<Payment> findAllList(Pageable pageable);
+
+    Payment findTopByChildIdOrderByPaymentDateDesc(Long childId);
 }
