@@ -40,7 +40,7 @@ public class AgeGroupController implements CRUDController<AgeGroupDto, AgeGroupC
     }
 
     @Override
-    @Operation(summary = "Получить список всех возрастных групп с пагинацией")
+    @Operation(summary = "Получить список всех возрастных групп")
     public List<AgeGroup> allList(int page, int size) {
         return ageGroupService.allList(page, size);
     }

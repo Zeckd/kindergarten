@@ -41,7 +41,7 @@ public class ChildController implements CRUDController<ChildDto, ChildCreateDto,
     }
 
     @Override
-    @Operation(summary = "Получить список всех детей с пагинацией")
+    @Operation(summary = "Получить список всех детей")
     public List<Child> allList(int page, int size) {
         return childService.findAllList(page, size);
     }

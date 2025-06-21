@@ -44,7 +44,7 @@ public class TeacherController implements CRUDControllerWithStatus<TeacherDto, T
     }
 
     @Override
-    @Operation(summary = "Получить список всех учителей с пагинацией")
+    @Operation(summary = "Получить список всех учителей")
     public List<Teacher> allList(int page, int size) {
         return teacherService.findAllList(page, size);
     }

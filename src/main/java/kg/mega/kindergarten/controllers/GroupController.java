@@ -39,7 +39,7 @@ public class GroupController implements CRUDController<GroupDto, GroupCreateDto,
     }
 
     @Override
-    @Operation(summary = "Получить список всех групп с пагинацией")
+    @Operation(summary = "Получить список всех групп")
     public List<Group> allList(int page, int size) {
         return groupService.findAllList(page, size);
     }

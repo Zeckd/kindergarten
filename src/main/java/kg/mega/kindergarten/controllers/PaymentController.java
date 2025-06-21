@@ -47,7 +47,7 @@ public class PaymentController implements CRUDControllerWithStatus<PaymentDto, P
     }
 
     @Override
-    @Operation(summary = "Получить список всех платежей с пагинацией")
+    @Operation(summary = "Получить список всех платежей")
     public List<Payment> allList(int page, int size) {
         return paymentService.findAllList(page, size);
     }

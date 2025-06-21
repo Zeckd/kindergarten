@@ -43,7 +43,7 @@ public class ChildGroupHistoryController implements CRUDController<ChildGroupHis
     }
 
     @Override
-    @Operation(summary = "Получить список всех записей истории групп с пагинацией")
+    @Operation(summary = "Получить список всех записей истории групп")
     public List<ChildGroupHistory> allList(int page, int size) {
         return childGroupHistoryService.findAllList(page, size);
     }

@@ -44,7 +44,7 @@ public class ParentController implements CRUDControllerWithStatus<ParentDto, Par
     }
 
     @Override
-    @Operation(summary = "Получить список всех родителей с пагинацией")
+    @Operation(summary = "Получить список всех родителей")
     public List<Parent> allList(int page, int size) {
         return parentService.findAllList(page, size);
     }
