@@ -43,6 +43,9 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public GroupDto create(GroupCreateDto groupCreateDto) {
         AgeGroup ageGroup = ageGroupService.findById(groupCreateDto.ageGroupId());
+        if (ageGroup == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         Group group = GroupMapper.INSTANCE.groupCreateDtoToGroup(groupCreateDto);
 

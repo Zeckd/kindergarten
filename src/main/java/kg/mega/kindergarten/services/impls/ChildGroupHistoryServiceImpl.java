@@ -15,7 +15,9 @@ import kg.mega.kindergarten.services.PaymentService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -41,7 +43,13 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
     @Override
     public ChildGroupHistoryDto create(ChildGroupHistoryCreateDto childGroupHistoryCreateDto) {
         Child child = childService.findById(childGroupHistoryCreateDto.childId());
+        if (child == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         Payment payment = paymentService.findByChildId(child.getId());
+        if (payment == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         ChildGroupHistory childGroupHistory = ChildGroupHistoryMapper.INSTANCE.childGroupHistoryCreateDtoToChildGroupHistory(childGroupHistoryCreateDto);
         childGroupHistory.setStartDate(payment.getPaymentDate());
         if (payment.getPaymentDate() == null) {
@@ -96,6 +104,9 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
     @Override
     public ChildGroupHistoryDebtDto findDebtByChildId(Long childId) {
         Child child = childService.findById(childId);
+        if (child == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         ChildGroupHistory childGroupHistory = childGroupHistoryRepo.findTopByChildIdOrderByEndDateDesc(child.getId());
         LocalDate startDate = childGroupHistory.getStartDate().toLocalDate();
         double price = childGroupHistory.getPrice();

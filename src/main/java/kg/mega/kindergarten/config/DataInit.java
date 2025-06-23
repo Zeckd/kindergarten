@@ -27,9 +27,9 @@ public class DataInit {
                 admin.setRole(RegisterRole.ADMIN);
 
                 userRepo.save(admin);
-                System.out.println("✅ Администратор создан: username=admin, password=admin123");
+                System.out.println(" Администратор создан: username=admin, password=admin123");
             } else {
-                System.out.println("ℹ️ Администратор уже существует");
+                System.out.println(" Администратор уже существует");
             }
         };
     }

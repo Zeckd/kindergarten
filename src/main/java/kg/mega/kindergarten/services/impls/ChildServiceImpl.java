@@ -15,7 +15,9 @@ import kg.mega.kindergarten.services.ParentService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -35,6 +37,9 @@ public class ChildServiceImpl implements ChildService {
     @Override
     public ChildDto create(ChildCreateDto childCreateDto) {
         List<Parent> parents = parentService.findAll(childCreateDto.parentsId());
+        if (parents == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         Group groupId = groupService.findById(childCreateDto.group()) ;
 
         Child child = ChildMapper.INSTANCE.childCreateDtoToChild(childCreateDto ,parents);

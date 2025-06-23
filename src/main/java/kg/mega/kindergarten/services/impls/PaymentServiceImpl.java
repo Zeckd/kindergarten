@@ -13,7 +13,9 @@ import kg.mega.kindergarten.services.PaymentService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +35,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDto create(PaymentCreateDto paymentCreateDto, PaymentType paymentType) {
         Child child = childService.findById(paymentCreateDto.childId());
+        if (child == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         Payment payment = PaymentMapper.INSTANCE.paymentCreateDtoToPayment(paymentCreateDto);
         payment.setChild(child);
         payment.setPaymentType(paymentType);
