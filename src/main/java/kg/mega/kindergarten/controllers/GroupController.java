@@ -21,7 +21,6 @@ public class GroupController implements CRUDController<GroupDto, GroupCreateDto,
     }
 
     @Operation(summary = "Создать новую группу")
-    @PostMapping("/create")
     public GroupDto create(GroupCreateDto groupCreateDto) {
         return groupService.create(groupCreateDto);
     }

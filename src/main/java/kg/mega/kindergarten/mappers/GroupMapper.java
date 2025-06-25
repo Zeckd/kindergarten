@@ -19,5 +19,4 @@ public interface GroupMapper {
     GroupDto groupToGroupDto(Group group);
     Group groupDtoToGroup(GroupDto groupDto);
 
-    List<GroupDto> groupToGroupDto(List<Group> group);
 }

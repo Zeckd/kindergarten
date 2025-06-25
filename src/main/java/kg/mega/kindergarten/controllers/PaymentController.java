@@ -25,7 +25,6 @@ public class PaymentController implements CRUDControllerWithStatus<PaymentDto, P
     }
 
     @Operation(summary = "Создать платеж с типом оплаты")
-    @PostMapping("/create")
     public PaymentDto create(
             @Parameter(description = "Данные платежа", required = true)
             PaymentCreateDto paymentCreateDto,

@@ -23,7 +23,6 @@ public class ChildController implements CRUDController<ChildDto, ChildCreateDto,
     }
 
     @Operation(summary = "Создать нового ребенка")
-    @PostMapping("/create")
     public ChildDto create(ChildCreateDto childCreateDto) {
         return childService.create(childCreateDto);
     }

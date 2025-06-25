@@ -23,7 +23,6 @@ public class ParentController implements CRUDControllerWithStatus<ParentDto, Par
     }
 
     @Operation(summary = "Создать нового родителя с ролью")
-    @PostMapping("/create")
     public ParentDto create(
             @RequestBody ParentCreateDto parentCreateDto,
             @Parameter(description = "Роль родителя", required = true)

@@ -25,7 +25,6 @@ public class ChildGroupHistoryController implements CRUDController<ChildGroupHis
     }
 
     @Operation(summary = "Создать запись истории группы ребенка")
-    @PostMapping("/create")
     public ChildGroupHistoryDto create(ChildGroupHistoryCreateDto childGroupHistoryCreateDto) {
         return childGroupHistoryService.create(childGroupHistoryCreateDto);
     }

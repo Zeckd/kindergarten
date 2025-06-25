@@ -14,6 +14,5 @@ public interface AgeGroupMapper {
     AgeGroup ageGroupCreateDtoToAgeGroup(AgeGroupCreateDto ageGroupCreateDto);
     AgeGroupDto ageGroupToAgeGroupDto(AgeGroup ageGroup);
     AgeGroup ageGroupDtoToAgeGroup(AgeGroupDto ageGroupDto);
-    List<AgeGroupDto> ageGroupToAgeGroupDto(List<AgeGroup> ageGroup);
 
 }

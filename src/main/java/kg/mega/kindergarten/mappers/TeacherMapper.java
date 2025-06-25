@@ -19,7 +19,6 @@ public interface TeacherMapper {
 
     Teacher teacherCreateDtoToTeacher(TeacherCreateDto teacherCreateDto);
 
-    TeacherCreateDto teacherToTeacherCreateDto(Teacher teacher);
 
 
     @Mapping(target = "id", source = "teacher.id")
@@ -28,5 +27,4 @@ public interface TeacherMapper {
 
     Teacher teacherDtoToTeacher(TeacherDto teacherDto);
 
-    List<TeacherDto> teacherToTeacherDto(List<Teacher> teacher);
 }

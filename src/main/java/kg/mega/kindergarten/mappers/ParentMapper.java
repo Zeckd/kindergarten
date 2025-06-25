@@ -14,7 +14,6 @@ public interface ParentMapper {
     ParentMapper INSTANCE = Mappers.getMapper(ParentMapper.class);
     Parent parentCreateDtoToParent(ParentCreateDto parentCreateDto);
 
-    ParentCreateDto parentToParentCreateDto(Parent parent);
 
 
     @Mapping(target = "id", source = "parent.id")
@@ -22,5 +21,4 @@ public interface ParentMapper {
 
     Parent parentDtoToParent(ParentDto parentDto);
 
-    List<ParentDto> parentToParentDto(List<Parent> parent);
 }

@@ -18,6 +18,5 @@ public interface ChildGroupHistoryMapper {
     ChildGroupHistory childGroupHistoryCreateDtoToChildGroupHistory(ChildGroupHistoryCreateDto childGroupHistoryCreateDto);
     ChildGroupHistoryDto childGroupHistoryToChildGroupHistoryDto(ChildGroupHistory childGroupHistory);
     ChildGroupHistory childGroupHistoryDtoToChildGroupHistory(ChildGroupHistoryDto childGroupHistoryDto);
-    List<ChildGroupHistoryDto> childGroupHistoryToChildGroupHistoryDto(List<ChildGroupHistory> childGroupHistory);
 
 }

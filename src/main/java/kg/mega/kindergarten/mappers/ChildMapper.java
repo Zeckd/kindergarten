@@ -24,7 +24,6 @@ public interface ChildMapper {
 
 
     Child childDtoToChild(ChildDto childDto);
-    List<ChildDto> childToChildDto(List<Child> child);
 
 
 }

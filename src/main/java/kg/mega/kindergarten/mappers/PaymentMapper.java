@@ -17,6 +17,5 @@ public interface PaymentMapper {
     Payment paymentCreateDtoToPayment(PaymentCreateDto paymentCreateDto);
     PaymentDto paymentToPaymentDto(Payment payment);
     Payment paymentDtoToPayment(PaymentDto paymentDto);
-    List<PaymentDto> paymentToPaymentDto(List<Payment> payment);
 
 }
