@@ -90,7 +90,11 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDto addTeacherOrAssistantAndChild(Long groupId, Long teacherOrAssistantId,Long childId) {
+
         Group group = groupRepo.findByIdGroup(groupId);
+        if (group == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found");
+        }
         if(teacherOrAssistantId != null) {
             Teacher teacherOrAssistant = teacherService.findById(teacherOrAssistantId);
             if (teacherOrAssistant.getPosition() == Position.TEACHER &&
