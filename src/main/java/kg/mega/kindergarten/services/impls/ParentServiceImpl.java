@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -59,6 +60,7 @@ public class ParentServiceImpl implements ParentService {
         return parentRepo.findAllList(pageable);
 
     }
+    @Transactional
 
     @Override
     public ParentDto delete(Long id) {

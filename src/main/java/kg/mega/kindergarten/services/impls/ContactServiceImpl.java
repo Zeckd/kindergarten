@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class ContactServiceImpl implements ContactService {
         return contactRepo.findAllList(pageable);
 
     }
-
+    @Transactional
     @Override
     public ContactDto delete(Long id) {
         Contact contact = contactRepo.findById(id).orElseThrow();
