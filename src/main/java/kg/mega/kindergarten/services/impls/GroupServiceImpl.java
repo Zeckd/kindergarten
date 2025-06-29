@@ -7,12 +7,11 @@ import kg.mega.kindergarten.models.AgeGroup;
 import kg.mega.kindergarten.models.Child;
 import kg.mega.kindergarten.models.Group;
 import kg.mega.kindergarten.models.Teacher;
-import kg.mega.kindergarten.models.dtos.GroupCreateDto;
+import kg.mega.kindergarten.models.dtos.GroupSaveDto;
 import kg.mega.kindergarten.models.dtos.GroupDto;
 import kg.mega.kindergarten.repositories.ChildRepo;
 import kg.mega.kindergarten.repositories.GroupRepo;
 import kg.mega.kindergarten.services.AgeGroupService;
-import kg.mega.kindergarten.services.ChildService;
 import kg.mega.kindergarten.services.GroupService;
 import kg.mega.kindergarten.services.TeacherService;
 import org.springframework.data.domain.PageRequest;
@@ -42,16 +41,29 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public GroupDto create(GroupCreateDto groupCreateDto) {
+    public GroupDto create(GroupSaveDto groupCreateDto) {
         AgeGroup ageGroup = ageGroupService.findById(groupCreateDto.ageGroupId());
         if (ageGroup == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        Group group = GroupMapper.INSTANCE.groupCreateDtoToGroup(groupCreateDto);
+        Group group = GroupMapper.INSTANCE.groupSaveDtoToGroup(groupCreateDto);
 
         group.setAgeGroup(ageGroup);
         group = groupRepo.save(group);
+
+        return GroupMapper.INSTANCE.groupToGroupDto(group);
+    }
+
+    @Override
+    public GroupDto update(Long id, GroupSaveDto groupSaveDto, Delete delete) {
+        Group groupId = groupRepo.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
+        Group group = GroupMapper.INSTANCE.groupSaveDtoToGroup(groupSaveDto);
+        group.setId(id);
+        group.setDelete(delete);
+        group = groupRepo.save(group);
+
 
         return GroupMapper.INSTANCE.groupToGroupDto(group);
     }
@@ -72,19 +84,14 @@ public class GroupServiceImpl implements GroupService {
 
     }
 
-    @Override
-    public GroupDto update(GroupDto groupDto, Delete delete) {
-        Group group = GroupMapper.INSTANCE.groupDtoToGroup(groupDto);
-        group.setDelete(delete);
-        group = groupRepo.save(group);
-
-
-        return GroupMapper.INSTANCE.groupToGroupDto(group);
-    }
 
     @Override
     public Group findById(Long id) {
-        return groupRepo.findByIdGroup(id);
+        Group group =  groupRepo.findByIdGroup(id);
+        if (group == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Id not found");
+        }
+        return group;
 
     }
 

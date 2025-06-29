@@ -3,15 +3,17 @@ package kg.mega.kindergarten.services.impls;
 import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.mappers.AgeGroupMapper;
 import kg.mega.kindergarten.models.AgeGroup;
-import kg.mega.kindergarten.models.dtos.AgeGroupCreateDto;
+import kg.mega.kindergarten.models.dtos.AgeGroupSaveDto;
 import kg.mega.kindergarten.models.dtos.AgeGroupDto;
 import kg.mega.kindergarten.repositories.AgeGroupRepo;
 import kg.mega.kindergarten.services.AgeGroupService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,8 +27,8 @@ public class AgeGroupServiceImpl implements AgeGroupService {
     }
 
     @Override
-    public AgeGroupDto create(AgeGroupCreateDto ageGroupCreateDto) {
-        AgeGroup ageGroup = AgeGroupMapper.INSTANCE.ageGroupCreateDtoToAgeGroup(ageGroupCreateDto);
+    public AgeGroupDto create(AgeGroupSaveDto ageGroupCreateDto) {
+        AgeGroup ageGroup = AgeGroupMapper.INSTANCE.ageGroupSaveDtoToAgeGroup(ageGroupCreateDto);
         ageGroup = ageGroupRepo.save(ageGroup);
         return AgeGroupMapper.INSTANCE.ageGroupToAgeGroupDto(ageGroup);
     }
@@ -48,8 +50,11 @@ public class AgeGroupServiceImpl implements AgeGroupService {
     }
 
     @Override
-    public AgeGroupDto update(AgeGroupDto ageGroupDto, Delete delete) {
-        AgeGroup ageGroup = AgeGroupMapper.INSTANCE.ageGroupDtoToAgeGroup(ageGroupDto);
+    public AgeGroupDto update(Long id,AgeGroupSaveDto ageGroupSaveDto, Delete delete) {
+        AgeGroup ageGroupId = ageGroupRepo.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
+        AgeGroup ageGroup = AgeGroupMapper.INSTANCE.ageGroupSaveDtoToAgeGroup(ageGroupSaveDto);
+        ageGroup.setId(id);
         ageGroup.setDelete(delete);
         ageGroup = ageGroupRepo.save(ageGroup);
 
@@ -59,7 +64,11 @@ public class AgeGroupServiceImpl implements AgeGroupService {
 
     @Override
     public AgeGroup findById(Long id) {
-        return ageGroupRepo.findByIdAgeGroup(id);
+        AgeGroup ageGroup = ageGroupRepo.findByIdAgeGroup(id);
+        if (ageGroup == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"AgeGroup not found");
+        }
+        return ageGroup;
 
     }
 }

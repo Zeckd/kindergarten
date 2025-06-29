@@ -3,9 +3,6 @@ import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record ContactDto(
-
-        Long id,
-
         @NotBlank(message = "Основной номер телефона обязателен")
         @Pattern(
                 regexp = "\\+996\\d{9}",

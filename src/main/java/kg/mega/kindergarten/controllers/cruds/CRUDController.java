@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-public interface CRUDController <Dto, CreateDto, Entity>{
+public interface CRUDController <Dto, CreateOrUpdateDto, Entity>{
     @PostMapping("/create")
-    Dto create(@Valid @RequestBody CreateDto dto);
+    Dto create(@Valid @RequestBody CreateOrUpdateDto dto);
     @PutMapping("/update")
-    Dto update(@Valid @RequestBody Dto dto, @RequestParam Delete delete);
+    Dto update(@RequestParam Long id, @Valid @RequestBody CreateOrUpdateDto dto, @RequestParam Delete delete);
     @DeleteMapping("/delete")
     Dto delete(@RequestParam Long id);
     @GetMapping("/get-list")

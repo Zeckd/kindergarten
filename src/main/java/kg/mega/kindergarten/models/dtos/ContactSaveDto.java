@@ -3,7 +3,7 @@ package kg.mega.kindergarten.models.dtos;
 import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ContactCreateDto(
+public record ContactSaveDto(
 
         @NotBlank(message = "Основной номер телефона обязателен")
         @Pattern(

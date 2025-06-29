@@ -1,5 +1,6 @@
 package kg.mega.kindergarten.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import kg.mega.kindergarten.enums.Delete;
@@ -17,6 +18,7 @@ public class Payment {
     @JoinColumn(name = "child_id", nullable = false)
     private Child child;
     private double paymentSum;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime paymentDate;
     private String period;
     @Enumerated(EnumType.STRING)

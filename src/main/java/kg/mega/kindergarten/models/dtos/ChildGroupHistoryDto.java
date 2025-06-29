@@ -20,6 +20,8 @@ public record ChildGroupHistoryDto(
 
         @NotNull(message = "Ребенок обязателен")
         @Schema(description = "Ребенок", required = true)
+        @JsonIgnoreProperties({"group"})
+
         Child child,
 
         @NotNull(message = "Дата начала обязательна")

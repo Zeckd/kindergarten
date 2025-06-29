@@ -4,13 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
-import kg.mega.kindergarten.models.Group;
-import kg.mega.kindergarten.models.Parent;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public record ChildCreateDto (
+public record ChildSaveDto(
         @NotBlank(message = "Имя не должно быть пустым")
         @Schema(description = "Имя ребенка", example = "Иван", required = true)
         String firstName,

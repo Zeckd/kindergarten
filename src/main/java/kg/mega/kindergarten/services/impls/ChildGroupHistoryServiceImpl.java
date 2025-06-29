@@ -5,7 +5,7 @@ import kg.mega.kindergarten.mappers.ChildGroupHistoryMapper;
 import kg.mega.kindergarten.models.Child;
 import kg.mega.kindergarten.models.ChildGroupHistory;
 import kg.mega.kindergarten.models.Payment;
-import kg.mega.kindergarten.models.dtos.ChildGroupHistoryCreateDto;
+import kg.mega.kindergarten.models.dtos.ChildGroupHistorySaveDto;
 import kg.mega.kindergarten.models.dtos.ChildGroupHistoryDebtDto;
 import kg.mega.kindergarten.models.dtos.ChildGroupHistoryDto;
 import kg.mega.kindergarten.repositories.ChildGroupHistoryRepo;
@@ -22,8 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -42,7 +40,7 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
         this.paymentService = paymentService;
     }
     @Override
-    public ChildGroupHistoryDto create(ChildGroupHistoryCreateDto childGroupHistoryCreateDto) {
+    public ChildGroupHistoryDto create(ChildGroupHistorySaveDto childGroupHistoryCreateDto) {
         Child child = childService.findById(childGroupHistoryCreateDto.childId());
         if (child == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -51,7 +49,7 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
         if (payment == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        ChildGroupHistory childGroupHistory = ChildGroupHistoryMapper.INSTANCE.childGroupHistoryCreateDtoToChildGroupHistory(childGroupHistoryCreateDto);
+        ChildGroupHistory childGroupHistory = ChildGroupHistoryMapper.INSTANCE.childGroupHistorySaveDtoToChildGroupHistory(childGroupHistoryCreateDto);
         childGroupHistory.setStartDate(payment.getPaymentDate());
         if (payment.getPaymentDate() == null) {
             throw new RuntimeException("У ребенка нет платежей");
@@ -72,6 +70,19 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
     }
 
     @Override
+    public ChildGroupHistoryDto update(Long id, ChildGroupHistorySaveDto childGroupHistorySaveDto, Delete delete) {
+        ChildGroupHistory childGroupHistoryId = childGroupHistoryRepo.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
+        ChildGroupHistory childGroupHistory = ChildGroupHistoryMapper.INSTANCE.childGroupHistorySaveDtoToChildGroupHistory(childGroupHistorySaveDto);
+        childGroupHistory.setId(id);
+        childGroupHistory.setDelete(delete);
+        childGroupHistory = childGroupHistoryRepo.save(childGroupHistory);
+
+
+        return ChildGroupHistoryMapper.INSTANCE.childGroupHistoryToChildGroupHistoryDto(childGroupHistory);
+    }
+
+    @Override
     public List<ChildGroupHistory> findAllList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         return childGroupHistoryRepo.findAllList(pageable);
@@ -87,19 +98,14 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
 
     }
 
-    @Override
-    public ChildGroupHistoryDto update(ChildGroupHistoryDto childGroupHistoryDto, Delete delete) {
-        ChildGroupHistory childGroupHistory = ChildGroupHistoryMapper.INSTANCE.childGroupHistoryDtoToChildGroupHistory(childGroupHistoryDto);
-        childGroupHistory.setDelete(delete);
-        childGroupHistory = childGroupHistoryRepo.save(childGroupHistory);
-
-
-        return ChildGroupHistoryMapper.INSTANCE.childGroupHistoryToChildGroupHistoryDto(childGroupHistory);
-    }
 
     @Override
     public ChildGroupHistory findById(Long id) {
-        return childGroupHistoryRepo.findByIdChildGroupHistory(id);
+        ChildGroupHistory childGroupHistory = childGroupHistoryRepo.findByIdChildGroupHistory(id);
+        if (childGroupHistory == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Id not found");
+        }
+        return childGroupHistory;
 
     }
 

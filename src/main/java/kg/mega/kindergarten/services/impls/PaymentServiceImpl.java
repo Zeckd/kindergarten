@@ -5,7 +5,7 @@ import kg.mega.kindergarten.enums.PaymentType;
 import kg.mega.kindergarten.mappers.PaymentMapper;
 import kg.mega.kindergarten.models.Child;
 import kg.mega.kindergarten.models.Payment;
-import kg.mega.kindergarten.models.dtos.PaymentCreateDto;
+import kg.mega.kindergarten.models.dtos.PaymentSaveDto;
 import kg.mega.kindergarten.models.dtos.PaymentDto;
 import kg.mega.kindergarten.repositories.PaymentRepo;
 import kg.mega.kindergarten.services.ChildService;
@@ -34,16 +34,31 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentDto create(PaymentCreateDto paymentCreateDto, PaymentType paymentType) {
+    public PaymentDto create(PaymentSaveDto paymentCreateDto, PaymentType paymentType) {
         Child child = childService.findById(paymentCreateDto.childId());
         if (child == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        Payment payment = PaymentMapper.INSTANCE.paymentCreateDtoToPayment(paymentCreateDto);
+        Payment payment = PaymentMapper.INSTANCE.paymentSaveDtoToPayment(paymentCreateDto);
         payment.setChild(child);
         payment.setPaymentType(paymentType);
         payment.setPaymentDate(LocalDateTime.now());
         payment = paymentRepo.save(payment);
+
+        return PaymentMapper.INSTANCE.paymentToPaymentDto(payment);
+    }
+
+    @Override
+    public PaymentDto update(Long id, PaymentSaveDto paymentSaveDto,PaymentType paymentType, Delete delete) {
+        Payment paymentId = paymentRepo.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
+        Payment payment = PaymentMapper.INSTANCE.paymentSaveDtoToPayment(paymentSaveDto);
+        payment.setId(id);
+        payment.setPaymentDate(LocalDateTime.now());
+        payment.setPaymentType(paymentType);
+        payment.setDelete(delete);
+        payment = paymentRepo.save(payment);
+
 
         return PaymentMapper.INSTANCE.paymentToPaymentDto(payment);
     }
@@ -64,19 +79,15 @@ public class PaymentServiceImpl implements PaymentService {
 
     }
 
-    @Override
-    public PaymentDto update(PaymentDto paymentDto, Delete delete) {
-        Payment payment = PaymentMapper.INSTANCE.paymentDtoToPayment(paymentDto);
-        payment.setDelete(delete);
-        payment = paymentRepo.save(payment);
 
-
-        return PaymentMapper.INSTANCE.paymentToPaymentDto(payment);
-    }
 
     @Override
     public Payment findById(Long id) {
-        return paymentRepo.findByIdPayment(id);
+        Payment payment = paymentRepo.findByIdPayment(id);
+        if (payment == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Id not found");
+        }
+        return payment;
 
     }
 

@@ -4,14 +4,16 @@ import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.mappers.ContactMapper;
 import kg.mega.kindergarten.models.Contact;
 import kg.mega.kindergarten.models.dtos.ContactDto;
-import kg.mega.kindergarten.models.dtos.ContactCreateDto;
+import kg.mega.kindergarten.models.dtos.ContactSaveDto;
 import kg.mega.kindergarten.repositories.ContactRepo;
 import kg.mega.kindergarten.services.ContactService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,15 +27,15 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact create(ContactCreateDto contactCreateDto) {
-        Contact contact = ContactMapper.INSTANCE.contactCreateDtoToContact(contactCreateDto);
+    public Contact create(ContactSaveDto contactCreateDto) {
+        Contact contact = ContactMapper.INSTANCE.contactSaveDtoToContact(contactCreateDto);
         return contactRepo.save(contact);
 
     }
 
     @Override
-    public ContactDto update(ContactDto contactDto, Delete delete) {
-        Contact contact = ContactMapper.INSTANCE.contactDtoToContact(contactDto);
+    public ContactDto update(ContactSaveDto contactSaveDto, Delete delete) {
+        Contact contact = ContactMapper.INSTANCE.contactSaveDtoToContact(contactSaveDto);
         contact.setDelete(delete);
         contact = contactRepo.save(contact);
 
@@ -62,7 +64,11 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Contact findById(Long id) {
 
-        return contactRepo.findByIdContact(id);
+        Contact contact = contactRepo.findByIdContact(id);
+        if (contact == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Id not found");
+        }
+        return contact;
 
     }
 }

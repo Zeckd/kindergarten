@@ -5,7 +5,7 @@ import kg.mega.kindergarten.enums.Role;
 import kg.mega.kindergarten.mappers.ParentMapper;
 import kg.mega.kindergarten.models.Contact;
 import kg.mega.kindergarten.models.Parent;
-import kg.mega.kindergarten.models.dtos.ParentCreateDto;
+import kg.mega.kindergarten.models.dtos.ParentSaveDto;
 import kg.mega.kindergarten.models.dtos.ParentDto;
 import kg.mega.kindergarten.repositories.ParentRepo;
 import kg.mega.kindergarten.services.ContactService;
@@ -13,8 +13,11 @@ import kg.mega.kindergarten.services.ParentService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -30,9 +33,9 @@ public class ParentServiceImpl implements ParentService {
     }
 
     @Override
-    public ParentDto create(ParentCreateDto parentCreateDto, Role role) {
+    public ParentDto create(ParentSaveDto parentCreateDto, Role role) {
         Contact contact = contactService.create(parentCreateDto.contactCreate());
-        Parent parent = ParentMapper.INSTANCE.parentCreateDtoToParent(parentCreateDto);
+        Parent parent = ParentMapper.INSTANCE.parentSaveDtoToParent(parentCreateDto);
         parent.setRole(role);
         parent.setContact(contact);
         parent = parentRepo.save(parent);
@@ -45,8 +48,15 @@ public class ParentServiceImpl implements ParentService {
     }
 
     @Override
-    public ParentDto update(ParentDto parentDto, Delete delete) {
-        Parent parent = ParentMapper.INSTANCE.parentDtoToParent(parentDto);
+    public ParentDto update(Long id ,ParentSaveDto parentSaveDto,Role role, Delete delete) {
+        Parent parentId = parentRepo.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
+        Contact contact = contactService.create(parentSaveDto.contactCreate());
+
+        Parent parent = ParentMapper.INSTANCE.parentSaveDtoToParent(parentSaveDto);
+        parent.setId(id);
+        parent.setRole(role);
+        parent.setContact(contact);
         parent.setDelete(delete);
         parent = parentRepo.save(parent);
 
@@ -75,7 +85,11 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     public Parent findById(Long id) {
-        return parentRepo.findByIdParent(id);
+        Parent parent = parentRepo.findByIdParent(id);
+        if (parent == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Id not found");
+        }
+        return parent;
 
     }
 

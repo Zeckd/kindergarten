@@ -15,7 +15,7 @@ public interface GroupRepo extends JpaRepository<Group, Long> {
     Group findByIdGroup(Long id);
 
 
-    @Query("select u from  Group u where u.delete = 0")
+        @Query("select u from  Group u where u.delete = 0")
     List<Group> findAllList(Pageable pageable);
     boolean existsByTeacher_Id(Long teacherId);
     boolean existsByAssistant_Id(Long assistantId);

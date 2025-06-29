@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-public interface CRUDControllerWithStatus <Dto, CreateDto, Entity, Status> {
+public interface CRUDControllerWithStatus <Dto, CreateOrUpdateDto, Entity, Status> {
     @PostMapping("/create")
-    Dto create(@Valid @RequestBody CreateDto dto, @RequestParam Status status);
+    Dto create(@Valid @RequestBody CreateOrUpdateDto dto, @RequestParam Status status);
 
     @PutMapping("/update")
-    Dto update(@Valid @RequestBody Dto dto, @RequestParam Delete delete);
+    Dto update(@RequestParam Long id ,@Valid @RequestBody CreateOrUpdateDto dto, @RequestParam Status status, @RequestParam Delete delete);
 
     @DeleteMapping("/delete")
     Dto delete(@RequestParam Long id);

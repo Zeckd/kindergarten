@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
-public record PaymentCreateDto(
+public record PaymentSaveDto(
 
         @NotNull(message = "ID ребёнка обязателен")
         @Schema(description = "ID ребёнка", example = "1", required = true)

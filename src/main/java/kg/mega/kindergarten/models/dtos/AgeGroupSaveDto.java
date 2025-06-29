@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
-public record AgeGroupCreateDto (
+public record AgeGroupSaveDto(
         @NotBlank(message = "Название не должно быть пустым")
         String name,
         @Min(value = 1, message = "Возрастная группа должна быть не меньше 1")

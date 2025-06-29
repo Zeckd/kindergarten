@@ -1,15 +1,11 @@
 package kg.mega.kindergarten.models.dtos;
 
-import kg.mega.kindergarten.enums.Position;
-import kg.mega.kindergarten.models.Contact;
-
 import java.time.LocalDate;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
 
-public record TeacherCreateDto(
+public record TeacherSaveDto(
 
         @NotBlank(message = "Имя обязательно")
         @Schema(description = "Имя преподавателя", example = "Айбек", required = true)
@@ -30,6 +26,6 @@ public record TeacherCreateDto(
         @NotNull(message = "Контактная информация обязательна")
         @Valid
         @Schema(description = "Контактная информация", required = true)
-        ContactCreateDto contactCreate
+        ContactSaveDto contactCreate
 
 ) {}

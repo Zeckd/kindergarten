@@ -1,13 +1,10 @@
 package kg.mega.kindergarten.models.dtos;
 
-import kg.mega.kindergarten.enums.Role;
-import kg.mega.kindergarten.models.Contact;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ParentCreateDto(
+public record ParentSaveDto(
 
         @NotBlank(message = "Имя не должно быть пустым")
         @Schema(description = "Имя родителя", example = "Айбек", required = true)
@@ -23,6 +20,6 @@ public record ParentCreateDto(
         @NotNull(message = "Контактная информация обязательна")
         @Valid
         @Schema(description = "Контактная информация родителя", required = true)
-        ContactCreateDto contactCreate
+        ContactSaveDto contactCreate
 ) {}
 

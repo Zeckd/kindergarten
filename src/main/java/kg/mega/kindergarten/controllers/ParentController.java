@@ -6,7 +6,7 @@ import kg.mega.kindergarten.controllers.cruds.CRUDControllerWithStatus;
 import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.enums.Role;
 import kg.mega.kindergarten.models.Parent;
-import kg.mega.kindergarten.models.dtos.ParentCreateDto;
+import kg.mega.kindergarten.models.dtos.ParentSaveDto;
 import kg.mega.kindergarten.models.dtos.ParentDto;
 import kg.mega.kindergarten.services.ParentService;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/parent")
-public class ParentController implements CRUDControllerWithStatus<ParentDto, ParentCreateDto, Parent, Role> {
+public class ParentController implements CRUDControllerWithStatus<ParentDto, ParentSaveDto, Parent, Role> {
     private final ParentService parentService;
 
     public ParentController(ParentService parentService) {
@@ -24,16 +24,16 @@ public class ParentController implements CRUDControllerWithStatus<ParentDto, Par
 
     @Operation(summary = "Создать нового родителя с ролью")
     public ParentDto create(
-            @RequestBody ParentCreateDto parentCreateDto,
+           ParentSaveDto parentCreateDto,
             @Parameter(description = "Роль родителя", required = true)
-            @RequestParam Role role) {
+            Role role) {
         return parentService.create(parentCreateDto, role);
     }
 
     @Override
     @Operation(summary = "Обновить данные родителя")
-    public ParentDto update(ParentDto parentDto, Delete delete) {
-        return parentService.update(parentDto, delete);
+    public ParentDto update(Long id, ParentSaveDto parentSaveDto,Role role, Delete delete) {
+        return parentService.update(id ,parentSaveDto,role, delete);
     }
 
     @Override

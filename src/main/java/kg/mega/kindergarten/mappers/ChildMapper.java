@@ -1,9 +1,8 @@
 package kg.mega.kindergarten.mappers;
 
 import kg.mega.kindergarten.models.Child;
-import kg.mega.kindergarten.models.Group;
 import kg.mega.kindergarten.models.Parent;
-import kg.mega.kindergarten.models.dtos.ChildCreateDto;
+import kg.mega.kindergarten.models.dtos.ChildSaveDto;
 import kg.mega.kindergarten.models.dtos.ChildDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,14 +15,13 @@ public interface ChildMapper {
     ChildMapper INSTANCE = Mappers.getMapper(ChildMapper.class);
     @Mapping(source = "parents", target = "parents")
 
-    @Mapping(source = "childCreateDto.group", target = "group.id")
+    @Mapping(source = "childSaveDto.group", target = "group.id")
 
-    Child childCreateDtoToChild(ChildCreateDto childCreateDto, List<Parent> parents);
+    Child childSaveDtoToChild(ChildSaveDto childSaveDto, List<Parent> parents);
 
     ChildDto childToChildDto(Child child);
 
 
-    Child childDtoToChild(ChildDto childDto);
 
 
 }

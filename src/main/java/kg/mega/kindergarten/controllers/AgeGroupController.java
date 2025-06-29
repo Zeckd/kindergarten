@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import kg.mega.kindergarten.controllers.cruds.CRUDController;
 import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.models.AgeGroup;
-import kg.mega.kindergarten.models.dtos.AgeGroupCreateDto;
+import kg.mega.kindergarten.models.dtos.AgeGroupSaveDto;
 import kg.mega.kindergarten.models.dtos.AgeGroupDto;
 import kg.mega.kindergarten.services.AgeGroupService;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/age-group")
-public class AgeGroupController implements CRUDController<AgeGroupDto, AgeGroupCreateDto, AgeGroup> {
+public class AgeGroupController implements CRUDController<AgeGroupDto, AgeGroupSaveDto, AgeGroup> {
     private final AgeGroupService ageGroupService;
 
     public AgeGroupController(AgeGroupService ageGroupService) {
@@ -23,14 +23,15 @@ public class AgeGroupController implements CRUDController<AgeGroupDto, AgeGroupC
 
     @Override
     @Operation(summary = "Создать новую возрастную группу")
-    public AgeGroupDto create(AgeGroupCreateDto ageGroupCreateDto) {
+    public AgeGroupDto create(AgeGroupSaveDto ageGroupCreateDto) {
         return ageGroupService.create(ageGroupCreateDto);
     }
 
     @Override
     @Operation(summary = "Обновить существующую возрастную группу")
-    public AgeGroupDto update(AgeGroupDto ageGroupDto, Delete delete) {
-        return ageGroupService.update(ageGroupDto, delete);
+    public AgeGroupDto update(Long id, AgeGroupSaveDto ageGroupSaveDto, Delete delete) {
+        return ageGroupService.update(id, ageGroupSaveDto, delete);
+
     }
 
     @Override

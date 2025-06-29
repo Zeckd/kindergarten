@@ -2,16 +2,17 @@ package kg.mega.kindergarten.services;
 
 import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.models.ChildGroupHistory;
-import kg.mega.kindergarten.models.dtos.ChildGroupHistoryCreateDto;
+import kg.mega.kindergarten.models.dtos.ChildGroupHistorySaveDto;
 import kg.mega.kindergarten.models.dtos.ChildGroupHistoryDebtDto;
 import kg.mega.kindergarten.models.dtos.ChildGroupHistoryDto;
 
 import java.util.List;
 
 public interface ChildGroupHistoryService {
-    ChildGroupHistoryDto create(ChildGroupHistoryCreateDto childGroupHistoryCreateDto);
+    ChildGroupHistoryDto create(ChildGroupHistorySaveDto childGroupHistoryCreateDto);
 
-    ChildGroupHistoryDto update(ChildGroupHistoryDto childGroupHistoryDto, Delete delete);
+    ChildGroupHistoryDto update(Long id, ChildGroupHistorySaveDto childGroupHistorySaveDto, Delete delete);
+
 
     ChildGroupHistoryDto delete(Long id);
 
@@ -20,4 +21,5 @@ public interface ChildGroupHistoryService {
     ChildGroupHistory findById(Long id);
 
     ChildGroupHistoryDebtDto findDebtByChildId(Long childId);
+
 }

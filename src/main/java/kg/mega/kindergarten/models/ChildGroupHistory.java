@@ -1,5 +1,6 @@
 package kg.mega.kindergarten.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -21,7 +22,9 @@ public class ChildGroupHistory {
     @JoinColumn(name = "child_id", nullable = false)
     @JsonIgnoreProperties({"group"})
     private Child child;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endDate;
     private double price;
     @JsonIgnore

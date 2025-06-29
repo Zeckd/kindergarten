@@ -4,10 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import kg.mega.kindergarten.controllers.cruds.CRUDController;
 import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.models.Child;
-import kg.mega.kindergarten.models.dtos.ChildCreateDto;
+import kg.mega.kindergarten.models.dtos.ChildSaveDto;
 import kg.mega.kindergarten.models.dtos.ChildDto;
 import kg.mega.kindergarten.services.ChildService;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/child")
-public class ChildController implements CRUDController<ChildDto, ChildCreateDto, Child> {
+public class ChildController implements CRUDController<ChildDto, ChildSaveDto, Child> {
     private final ChildService childService;
 
     public ChildController(ChildService childService) {
@@ -23,14 +22,15 @@ public class ChildController implements CRUDController<ChildDto, ChildCreateDto,
     }
 
     @Operation(summary = "Создать нового ребенка")
-    public ChildDto create(ChildCreateDto childCreateDto) {
+    public ChildDto create(ChildSaveDto childCreateDto) {
         return childService.create(childCreateDto);
     }
 
     @Override
     @Operation(summary = "Обновить данные ребенка")
-    public ChildDto update(ChildDto childDto, Delete delete) {
-        return childService.update(childDto, delete);
+
+    public ChildDto update(Long id, ChildSaveDto childSaveDto, Delete delete) {
+        return childService.update(id,childSaveDto, delete);
     }
 
     @Override

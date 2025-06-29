@@ -1,13 +1,11 @@
 package kg.mega.kindergarten.mappers;
 
 import kg.mega.kindergarten.models.Group;
-import kg.mega.kindergarten.models.dtos.GroupCreateDto;
+import kg.mega.kindergarten.models.dtos.GroupSaveDto;
 import kg.mega.kindergarten.models.dtos.GroupDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 @Mapper
 public interface GroupMapper {
@@ -15,8 +13,7 @@ public interface GroupMapper {
     @Mapping(source = "ageGroupId", target = "ageGroup.id")
 
 
-    Group groupCreateDtoToGroup(GroupCreateDto groupCreateDto);
+    Group groupSaveDtoToGroup(GroupSaveDto groupSaveDto);
     GroupDto groupToGroupDto(Group group);
-    Group groupDtoToGroup(GroupDto groupDto);
 
 }

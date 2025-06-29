@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import kg.mega.kindergarten.controllers.cruds.CRUDController;
 import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.models.Group;
-import kg.mega.kindergarten.models.dtos.GroupCreateDto;
+import kg.mega.kindergarten.models.dtos.GroupSaveDto;
 import kg.mega.kindergarten.models.dtos.GroupDto;
 import kg.mega.kindergarten.services.GroupService;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/group")
-public class GroupController implements CRUDController<GroupDto, GroupCreateDto, Group> {
+public class GroupController implements CRUDController<GroupDto, GroupSaveDto, Group> {
     private final GroupService groupService;
 
     public GroupController(GroupService groupService) {
@@ -21,15 +21,18 @@ public class GroupController implements CRUDController<GroupDto, GroupCreateDto,
     }
 
     @Operation(summary = "Создать новую группу")
-    public GroupDto create(GroupCreateDto groupCreateDto) {
+    public GroupDto create(GroupSaveDto groupCreateDto) {
         return groupService.create(groupCreateDto);
     }
 
     @Override
     @Operation(summary = "Обновить данные группы")
-    public GroupDto update(GroupDto groupDto, Delete delete) {
-        return groupService.update(groupDto, delete);
+
+    public GroupDto update(Long id, GroupSaveDto groupSaveDto, Delete delete) {
+        return groupService.update(id,groupSaveDto, delete);
+
     }
+
 
     @Override
     @Operation(summary = "Удалить группу по ID")

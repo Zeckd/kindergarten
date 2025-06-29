@@ -2,15 +2,14 @@ package kg.mega.kindergarten.services;
 
 import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.models.Child;
-import kg.mega.kindergarten.models.dtos.ChildCreateDto;
+import kg.mega.kindergarten.models.dtos.ChildSaveDto;
 import kg.mega.kindergarten.models.dtos.ChildDto;
 
 import java.util.List;
 
 public interface ChildService {
-    ChildDto create(ChildCreateDto childCreateDto);
+    ChildDto create(ChildSaveDto childCreateDto);
 
-    ChildDto update(ChildDto childDto, Delete delete);
 
     ChildDto delete(Long id);
 
@@ -19,4 +18,6 @@ public interface ChildService {
     Child findById(Long id);
 
     List<Child> findByIdToList(Long childId);
+
+    ChildDto update(Long id, ChildSaveDto childSaveDto, Delete delete);
 }

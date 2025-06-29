@@ -6,10 +6,9 @@ import kg.mega.kindergarten.controllers.cruds.CRUDControllerWithStatus;
 import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.enums.PaymentType;
 import kg.mega.kindergarten.models.Payment;
-import kg.mega.kindergarten.models.dtos.PaymentCreateDto;
+import kg.mega.kindergarten.models.dtos.PaymentSaveDto;
 import kg.mega.kindergarten.models.dtos.PaymentDto;
 import kg.mega.kindergarten.services.PaymentService;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/payment")
-public class PaymentController implements CRUDControllerWithStatus<PaymentDto, PaymentCreateDto, Payment, PaymentType> {
+public class PaymentController implements CRUDControllerWithStatus<PaymentDto, PaymentSaveDto, Payment, PaymentType> {
     private final PaymentService paymentService;
 
     public PaymentController(PaymentService paymentService) {
@@ -26,8 +25,7 @@ public class PaymentController implements CRUDControllerWithStatus<PaymentDto, P
 
     @Operation(summary = "Создать платеж с типом оплаты")
     public PaymentDto create(
-            @Parameter(description = "Данные платежа", required = true)
-            PaymentCreateDto paymentCreateDto,
+            PaymentSaveDto paymentCreateDto,
             @Parameter(description = "Тип оплаты", required = true)
             PaymentType paymentType) {
         return paymentService.create(paymentCreateDto, paymentType);
@@ -35,9 +33,11 @@ public class PaymentController implements CRUDControllerWithStatus<PaymentDto, P
 
     @Override
     @Operation(summary = "Обновить платеж")
-    public PaymentDto update(PaymentDto paymentDto, Delete delete) {
-        return paymentService.update(paymentDto, delete);
+    public PaymentDto update(Long id, PaymentSaveDto paymentSaveDto,PaymentType paymentType, Delete delete) {
+        return paymentService.update(id ,paymentSaveDto, paymentType,delete);
+
     }
+
 
     @Override
     @Operation(summary = "Удалить платеж по ID")
