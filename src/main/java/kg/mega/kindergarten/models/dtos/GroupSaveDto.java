@@ -10,7 +10,7 @@ public record GroupSaveDto(
         String name,
 
         @NotNull(message = "Возрастная категория обязательна")
-        @Schema(description = "ID возрастной категории", example = "2", required = true)
+        @Schema(description = "ID возрастной категории", example = "1", required = true)
         Long ageGroupId
 ) {}
 

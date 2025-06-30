@@ -9,6 +9,7 @@ import kg.mega.kindergarten.models.Group;
 import kg.mega.kindergarten.models.Teacher;
 import kg.mega.kindergarten.models.dtos.GroupSaveDto;
 import kg.mega.kindergarten.models.dtos.GroupDto;
+import kg.mega.kindergarten.repositories.AgeGroupRepo;
 import kg.mega.kindergarten.repositories.ChildRepo;
 import kg.mega.kindergarten.repositories.GroupRepo;
 import kg.mega.kindergarten.services.AgeGroupService;
@@ -32,12 +33,14 @@ public class GroupServiceImpl implements GroupService {
     private final AgeGroupService ageGroupService;
     private final TeacherService teacherService;
     private final ChildRepo childRepo;
+    private final AgeGroupRepo ageGroupRepo;
 
-    public GroupServiceImpl(GroupRepo groupRepo, AgeGroupService ageGroupService, TeacherService teacherService, ChildRepo childRepo) {
+    public GroupServiceImpl(GroupRepo groupRepo, AgeGroupService ageGroupService, TeacherService teacherService, ChildRepo childRepo, AgeGroupRepo ageGroupRepo) {
         this.groupRepo = groupRepo;
         this.ageGroupService = ageGroupService;
         this.teacherService = teacherService;
         this.childRepo = childRepo;
+        this.ageGroupRepo = ageGroupRepo;
     }
 
     @Override
@@ -59,10 +62,17 @@ public class GroupServiceImpl implements GroupService {
     public GroupDto update(Long id, GroupSaveDto groupSaveDto, Delete delete) {
         Group groupId = groupRepo.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
+        AgeGroup ageGroup = ageGroupRepo.findByIdAgeGroup(groupSaveDto.ageGroupId());
+        if (ageGroup == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+
         Group group = GroupMapper.INSTANCE.groupSaveDtoToGroup(groupSaveDto);
         group.setId(id);
         group.setDelete(delete);
-        group = groupRepo.save(group);
+        group.setName(groupSaveDto.name());
+        group.setAgeGroup(ageGroup);
 
 
         return GroupMapper.INSTANCE.groupToGroupDto(group);
