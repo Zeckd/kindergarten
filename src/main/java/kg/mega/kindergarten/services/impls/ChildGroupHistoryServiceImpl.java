@@ -4,6 +4,7 @@ import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.mappers.ChildGroupHistoryMapper;
 import kg.mega.kindergarten.models.Child;
 import kg.mega.kindergarten.models.ChildGroupHistory;
+import kg.mega.kindergarten.models.Group;
 import kg.mega.kindergarten.models.Payment;
 import kg.mega.kindergarten.models.dtos.ChildGroupHistorySaveDto;
 import kg.mega.kindergarten.models.dtos.ChildGroupHistoryDebtDto;
@@ -11,6 +12,7 @@ import kg.mega.kindergarten.models.dtos.ChildGroupHistoryDto;
 import kg.mega.kindergarten.repositories.ChildGroupHistoryRepo;
 import kg.mega.kindergarten.services.ChildGroupHistoryService;
 import kg.mega.kindergarten.services.ChildService;
+import kg.mega.kindergarten.services.GroupService;
 import kg.mega.kindergarten.services.PaymentService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -31,38 +34,51 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
     private final ChildGroupHistoryRepo childGroupHistoryRepo;
     private final ChildService childService;
     private final PaymentService paymentService;
+    private final GroupService groupService;
 
 
-    public ChildGroupHistoryServiceImpl(ChildGroupHistoryRepo childGroupHistoryRepo, ChildService childService, PaymentService paymentService) {
+    public ChildGroupHistoryServiceImpl(ChildGroupHistoryRepo childGroupHistoryRepo, ChildService childService, PaymentService paymentService, GroupService groupService) {
         this.childGroupHistoryRepo = childGroupHistoryRepo;
-
         this.childService = childService;
         this.paymentService = paymentService;
+        this.groupService = groupService;
     }
     @Override
     public ChildGroupHistoryDto create(ChildGroupHistorySaveDto childGroupHistoryCreateDto) {
         Child child = childService.findById(childGroupHistoryCreateDto.childId());
         if (child == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ребенок не найден");
         }
-        Payment payment = paymentService.findByChildId(child.getId());
-        if (payment == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        ChildGroupHistory childGroupHistory = ChildGroupHistoryMapper.INSTANCE.childGroupHistorySaveDtoToChildGroupHistory(childGroupHistoryCreateDto);
-        childGroupHistory.setStartDate(payment.getPaymentDate());
-        if (payment.getPaymentDate() == null) {
-            throw new RuntimeException("У ребенка нет платежей");
-        }
-        childGroupHistory.setEndDate(payment.getPaymentDate()
-                .toLocalDate()
-                .plusMonths(1)
-                .withDayOfMonth(1)
-                .atStartOfDay());
-        childGroupHistory.setGroup(child.getGroup());
-        childGroupHistory.setChild(child);
-        childGroupHistory.setPrice(child.getGroup().getAgeGroup().getPrice());
 
+        Group group = groupService.findById(childGroupHistoryCreateDto.groupId());
+        if (group == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Группа не найдена");
+        }
+
+        if (group.getAgeGroup() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "У группы не указана возрастная группа");
+        }
+
+        Payment payment = paymentService.findByChildId(child.getId());
+        if (payment == null || payment.getPaymentDate() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "У ребенка нет платежей");
+        }
+
+        ChildGroupHistory childGroupHistory = ChildGroupHistoryMapper.INSTANCE.childGroupHistorySaveDtoToChildGroupHistory(childGroupHistoryCreateDto);
+        LocalDateTime paymentDate = payment.getPaymentDate();
+        LocalDate paymentLocalDate = paymentDate.toLocalDate();
+
+        // Начало периода - первый день месяца платежа
+        LocalDate startDate = paymentLocalDate.withDayOfMonth(1);
+        childGroupHistory.setStartDate(startDate.atStartOfDay());
+
+        // Конец периода - последний день месяца платежа
+        LocalDate endDate = paymentLocalDate.withDayOfMonth(paymentLocalDate.lengthOfMonth());
+        childGroupHistory.setEndDate(endDate.atTime(23, 59, 59));
+
+        childGroupHistory.setGroup(group);
+        childGroupHistory.setChild(child);
+        childGroupHistory.setPrice(group.getAgeGroup().getPrice());
 
         childGroupHistory = childGroupHistoryRepo.save(childGroupHistory);
 
@@ -71,15 +87,32 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
 
     @Override
     public ChildGroupHistoryDto update(Long id, ChildGroupHistorySaveDto childGroupHistorySaveDto, Delete delete) {
-        ChildGroupHistory childGroupHistoryId = childGroupHistoryRepo.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
-        ChildGroupHistory childGroupHistory = ChildGroupHistoryMapper.INSTANCE.childGroupHistorySaveDtoToChildGroupHistory(childGroupHistorySaveDto);
-        childGroupHistory.setId(id);
-        childGroupHistory.setDelete(delete);
-        childGroupHistory = childGroupHistoryRepo.save(childGroupHistory);
+        ChildGroupHistory existingHistory = childGroupHistoryRepo.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Запись истории не найдена"));
 
+        Child child = childService.findById(childGroupHistorySaveDto.childId());
+        if (child == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ребенок не найден");
+        }
 
-        return ChildGroupHistoryMapper.INSTANCE.childGroupHistoryToChildGroupHistoryDto(childGroupHistory);
+        Group group = groupService.findById(childGroupHistorySaveDto.groupId());
+        if (group == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Группа не найдена");
+        }
+
+        if (group.getAgeGroup() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "У группы не указана возрастная группа");
+        }
+
+        // Обновляем только необходимые поля, сохраняя существующие даты если они есть
+        existingHistory.setGroup(group);
+        existingHistory.setChild(child);
+        existingHistory.setPrice(group.getAgeGroup().getPrice());
+        existingHistory.setDelete(delete);
+
+        ChildGroupHistory updatedHistory = childGroupHistoryRepo.save(existingHistory);
+
+        return ChildGroupHistoryMapper.INSTANCE.childGroupHistoryToChildGroupHistoryDto(updatedHistory);
     }
 
     @Override
@@ -89,13 +122,14 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
 
     }
     @Transactional
-
     @Override
     public ChildGroupHistoryDto delete(Long id) {
-        ChildGroupHistory childGroupHistory = childGroupHistoryRepo.findById(id).orElseThrow();
+        ChildGroupHistory childGroupHistory = childGroupHistoryRepo.findByIdChildGroupHistory(id);
+        if (childGroupHistory == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Запись истории не найдена");
+        }
         childGroupHistoryRepo.deleteById(id);
-        return ChildGroupHistoryMapper.INSTANCE.childGroupHistoryToChildGroupHistoryDto(childGroupHistory) ;
-
+        return ChildGroupHistoryMapper.INSTANCE.childGroupHistoryToChildGroupHistoryDto(childGroupHistory);
     }
 
 
@@ -113,29 +147,54 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
     public ChildGroupHistoryDebtDto findDebtByChildId(Long childId) {
         Child child = childService.findById(childId);
         if (child == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ребенок не найден");
         }
-        ChildGroupHistory childGroupHistory = childGroupHistoryRepo.findTopByChildIdOrderByEndDateDesc(child.getId());
-        LocalDate startDate = childGroupHistory.getStartDate().toLocalDate();
-        double price = childGroupHistory.getPrice();
-        LocalDate lastDayOfMonth = startDate.withDayOfMonth(startDate.lengthOfMonth());
-        int totalWorkingDays = countWorkingDays(startDate.withDayOfMonth(1), lastDayOfMonth);
-        int actualWorkingDays = countWorkingDays(startDate, lastDayOfMonth);
-        int month = startDate.getMonthValue();
-        int year = startDate.getYear();
-        double paymentSum = paymentService.sumPaymentsByChildIdAndMonth(childId, month, year);
 
-        double dailyRate = price / totalWorkingDays;
-        double count = dailyRate * actualWorkingDays;
-        double debt = Math.round((count - paymentSum));
+        ChildGroupHistory childGroupHistory = childGroupHistoryRepo.findTopByChildIdOrderByEndDateDesc(child.getId());
+        if (childGroupHistory == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "История группы для ребенка не найдена");
+        }
+
+        if (childGroupHistory.getStartDate() == null || childGroupHistory.getEndDate() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "У записи истории отсутствуют даты");
+        }
+
+        LocalDate startDate = childGroupHistory.getStartDate().toLocalDate();
+        LocalDate endDate = childGroupHistory.getEndDate().toLocalDate();
+        double price = childGroupHistory.getPrice();
+
+        // Вычисляем рабочие дни в периоде
+        int totalWorkingDays = countWorkingDays(startDate, endDate);
+        if (totalWorkingDays == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "В периоде нет рабочих дней");
+        }
+
+        // Получаем сумму платежей за период
+        int startMonth = startDate.getMonthValue();
+        int startYear = startDate.getYear();
+        int endMonth = endDate.getMonthValue();
+        int endYear = endDate.getYear();
+
+        double paymentSum = 0.0;
+        if (startYear == endYear && startMonth == endMonth) {
+            // Период в одном месяце
+            paymentSum = paymentService.sumPaymentsByChildIdAndMonth(childId, startMonth, startYear);
+        } else {
+            // Период охватывает несколько месяцев - суммируем платежи за все месяцы
+            LocalDate current = startDate.withDayOfMonth(1);
+            while (!current.isAfter(endDate)) {
+                paymentSum += paymentService.sumPaymentsByChildIdAndMonth(childId, current.getMonthValue(), current.getYear());
+                current = current.plusMonths(1);
+            }
+        }
+
+        // Вычисляем долг: цена за период минус сумма платежей
+        double debt = Math.round((price - paymentSum) * 100.0) / 100.0;
+
         ChildGroupHistoryDebtDto dto = new ChildGroupHistoryDebtDto();
         dto.setChildId(child.getId());
-        if (debt <= 0) {
+        dto.setDebtAmount(Math.max(0, debt));
 
-            dto.setDebtAmount(0);
-        } else {
-            dto.setDebtAmount(debt);
-        }
         return dto;
     }
 

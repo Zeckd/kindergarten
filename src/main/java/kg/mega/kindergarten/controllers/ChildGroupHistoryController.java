@@ -4,13 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import kg.mega.kindergarten.controllers.cruds.CRUDController;
 import kg.mega.kindergarten.enums.Delete;
 import kg.mega.kindergarten.models.ChildGroupHistory;
+import kg.mega.kindergarten.models.dtos.BillResponseDto;
 import kg.mega.kindergarten.models.dtos.ChildGroupHistorySaveDto;
 import kg.mega.kindergarten.models.dtos.ChildGroupHistoryDebtDto;
 import kg.mega.kindergarten.models.dtos.ChildGroupHistoryDto;
+import kg.mega.kindergarten.services.BillService;
 import kg.mega.kindergarten.services.ChildGroupHistoryService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,9 +18,11 @@ import java.util.List;
 @RequestMapping("/api/child-group-history")
 public class ChildGroupHistoryController implements CRUDController<ChildGroupHistoryDto, ChildGroupHistorySaveDto, ChildGroupHistory> {
     private final ChildGroupHistoryService childGroupHistoryService;
+    private final BillService billService;
 
-    public ChildGroupHistoryController(ChildGroupHistoryService childGroupHistoryService) {
+    public ChildGroupHistoryController(ChildGroupHistoryService childGroupHistoryService, BillService billService) {
         this.childGroupHistoryService = childGroupHistoryService;
+        this.billService = billService;
     }
 
     @Operation(summary = "Создать запись истории группы ребенка")
@@ -56,7 +58,19 @@ public class ChildGroupHistoryController implements CRUDController<ChildGroupHis
 
     @Operation(summary = "Получить задолженность ребенка по ID ребенка")
     @GetMapping("/debt")
-    public ChildGroupHistoryDebtDto findDebtByChildId(Long childId) {
+    public ChildGroupHistoryDebtDto findDebtByChildId(@RequestParam Long childId) {
         return childGroupHistoryService.findDebtByChildId(childId);
+    }
+
+    @Operation(summary = "Создать счет на оплату для ребенка")
+    @PostMapping("/bill")
+    public BillResponseDto generateBill(@RequestParam Long childId) {
+        return billService.generateBill(childId);
+    }
+
+    @Operation(summary = "Получить статус счета по ID счета")
+    @GetMapping("/status")
+    public BillResponseDto getBillStatus(@RequestParam Long billId) {
+        return billService.getBillStatus(billId);
     }
 }

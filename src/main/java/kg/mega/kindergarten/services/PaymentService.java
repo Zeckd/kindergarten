@@ -18,7 +18,7 @@ public interface PaymentService {
     List<Payment> findAllList(int page, int size);
 
     Payment findById(Long id);
-    
+
 
     double sumPaymentsByChildIdAndMonth(Long child, int month, int year);
 
