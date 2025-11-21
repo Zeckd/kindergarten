@@ -52,4 +52,10 @@ public class AppUserServiceImpl implements AppUserService {
     public List<AppUser> getAll() {
         return userRepo.findAll();
     }
+
+    @Override
+    public AppUser findByUsername(String username) {
+        return userRepo.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
 }

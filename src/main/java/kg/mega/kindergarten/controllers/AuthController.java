@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -40,5 +41,11 @@ public class AuthController {
     @GetMapping("/admin/getAll")
     public List<AppUser> getAll() {
         return userService.getAll();
+    }
+
+    @Operation(summary = "Получить текущего пользователя")
+    @GetMapping("/me")
+    public ResponseEntity<AppUser> me(Principal principal) {
+        return ResponseEntity.ok(userService.findByUsername(principal.getName()));
     }
 }
