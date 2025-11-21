@@ -6,7 +6,12 @@ const Children = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentChild, setCurrentChild] = useState({ firstName: '', lastName: '' });
+  const [currentChild, setCurrentChild] = useState({
+    firstName: '',
+    lastName: '',
+    patronymic: '',
+    dateOfBirth: ''
+  });
 
   useEffect(() => {
     fetchChildren();
@@ -14,7 +19,7 @@ const Children = () => {
 
   const fetchChildren = async () => {
     try {
-      const response = await childService.getAll();
+      const response = await childService.getAll(0, 100);
       setChildren(response.data);
       setLoading(false);
     } catch (err) {
@@ -35,27 +40,45 @@ const Children = () => {
   };
 
   const handleEdit = (child) => {
-    setCurrentChild(child);
+    setCurrentChild({
+      id: child.id,
+      firstName: child.firstName,
+      lastName: child.lastName,
+      patronymic: child.patronymic || '',
+      dateOfBirth: child.dateOfBirth
+    });
     setIsEditing(true);
   };
 
   const handleCreate = () => {
-    setCurrentChild({ firstName: '', lastName: '' });
+    setCurrentChild({
+      firstName: '',
+      lastName: '',
+      patronymic: '',
+      dateOfBirth: ''
+    });
     setIsEditing(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      firstName: currentChild.firstName,
+      lastName: currentChild.lastName,
+      patronymic: currentChild.patronymic,
+      dateOfBirth: currentChild.dateOfBirth
+    };
+
     try {
       if (currentChild.id) {
-        await childService.update(currentChild);
+        await childService.update(currentChild.id, payload);
       } else {
-        await childService.create(currentChild);
+        await childService.create(payload);
       }
       setIsEditing(false);
       fetchChildren();
     } catch (err) {
-      alert('Ошибка при сохранении');
+      alert('Ошибка при сохранении: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -98,6 +121,25 @@ const Children = () => {
                 required
               />
             </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label>Отчество: </label>
+              <input
+                type="text"
+                name="patronymic"
+                value={currentChild.patronymic}
+                onChange={handleChange}
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label>Дата рождения: </label>
+              <input
+                type="date"
+                name="dateOfBirth"
+                value={currentChild.dateOfBirth}
+                onChange={handleChange}
+                required
+              />
+            </div>
             <button type="submit">Сохранить</button>
             <button type="button" onClick={() => setIsEditing(false)} style={{ marginLeft: '10px' }}>
               Отмена
@@ -112,6 +154,7 @@ const Children = () => {
             <th>ID</th>
             <th>Имя</th>
             <th>Фамилия</th>
+            <th>Дата рождения</th>
             <th>Действия</th>
           </tr>
         </thead>
@@ -121,6 +164,7 @@ const Children = () => {
               <td>{child.id}</td>
               <td>{child.firstName}</td>
               <td>{child.lastName}</td>
+              <td>{child.dateOfBirth}</td>
               <td>
                 <button onClick={() => handleEdit(child)}>Редактировать</button>
                 <button onClick={() => handleDelete(child.id)} style={{ marginLeft: '10px', color: 'red' }}>

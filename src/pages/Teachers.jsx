@@ -6,7 +6,18 @@ const Teachers = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentTeacher, setCurrentTeacher] = useState({ firstName: '', lastName: '', position: '' });
+  const [currentTeacher, setCurrentTeacher] = useState({
+    firstName: '',
+    lastName: '',
+    patronymic: '',
+    dateOfBirth: '',
+    contactCreate: {
+      phoneNumber: '',
+      secondaryPhoneNumber: '',
+      email: ''
+    }
+  });
+  const [position, setPosition] = useState('TEACHER');
 
   useEffect(() => {
     fetchTeachers();
@@ -14,7 +25,7 @@ const Teachers = () => {
 
   const fetchTeachers = async () => {
     try {
-      const response = await teacherService.getAll();
+      const response = await teacherService.getAll(0, 100); // Fetching first 100 for now
       setTeachers(response.data);
       setLoading(false);
     } catch (err) {
@@ -35,33 +46,75 @@ const Teachers = () => {
   };
 
   const handleEdit = (teacher) => {
-    setCurrentTeacher(teacher);
+    setCurrentTeacher({
+      id: teacher.id,
+      firstName: teacher.firstName,
+      lastName: teacher.lastName,
+      patronymic: teacher.patronymic || '',
+      dateOfBirth: teacher.dateOfBirth,
+      contactCreate: {
+        phoneNumber: teacher.contact?.phoneNumber || '',
+        secondaryPhoneNumber: teacher.contact?.secondaryPhoneNumber || '',
+        email: teacher.contact?.email || ''
+      }
+    });
+    setPosition(teacher.position);
     setIsEditing(true);
   };
 
   const handleCreate = () => {
-    setCurrentTeacher({ firstName: '', lastName: '', position: '' });
+    setCurrentTeacher({
+      firstName: '',
+      lastName: '',
+      patronymic: '',
+      dateOfBirth: '',
+      contactCreate: {
+        phoneNumber: '',
+        secondaryPhoneNumber: '',
+        email: ''
+      }
+    });
+    setPosition('TEACHER');
     setIsEditing(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      firstName: currentTeacher.firstName,
+      lastName: currentTeacher.lastName,
+      patronymic: currentTeacher.patronymic,
+      dateOfBirth: currentTeacher.dateOfBirth,
+      contactCreate: currentTeacher.contactCreate
+    };
+
     try {
       if (currentTeacher.id) {
-        await teacherService.update(currentTeacher);
+        await teacherService.update(currentTeacher.id, payload, position);
       } else {
-        await teacherService.create(currentTeacher);
+        await teacherService.create(payload, position);
       }
       setIsEditing(false);
       fetchTeachers();
     } catch (err) {
-      alert('Ошибка при сохранении');
+      alert('Ошибка при сохранении: ' + (err.response?.data?.message || err.message));
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setCurrentTeacher({ ...currentTeacher, [name]: value });
+    if (name.startsWith('contactCreate.')) {
+      const contactField = name.split('.')[1];
+      setCurrentTeacher({
+        ...currentTeacher,
+        contactCreate: {
+          ...currentTeacher.contactCreate,
+          [contactField]: value
+        }
+      });
+    } else {
+      setCurrentTeacher({ ...currentTeacher, [name]: value });
+    }
   };
 
   if (loading) return <div>Загрузка...</div>;
@@ -99,14 +152,65 @@ const Teachers = () => {
               />
             </div>
             <div style={{ marginBottom: '10px' }}>
-              <label>Должность: </label>
+              <label>Отчество: </label>
               <input
                 type="text"
-                name="position"
-                value={currentTeacher.position}
+                name="patronymic"
+                value={currentTeacher.patronymic}
+                onChange={handleChange}
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label>Дата рождения: </label>
+              <input
+                type="date"
+                name="dateOfBirth"
+                value={currentTeacher.dateOfBirth}
                 onChange={handleChange}
                 required
               />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label>Телефон (+996...): </label>
+              <input
+                type="text"
+                name="contactCreate.phoneNumber"
+                value={currentTeacher.contactCreate.phoneNumber}
+                onChange={handleChange}
+                required
+                placeholder="+996700123456"
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label>Доп. телефон: </label>
+              <input
+                type="text"
+                name="contactCreate.secondaryPhoneNumber"
+                value={currentTeacher.contactCreate.secondaryPhoneNumber}
+                onChange={handleChange}
+                placeholder="+996555123456"
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label>Email: </label>
+              <input
+                type="email"
+                name="contactCreate.email"
+                value={currentTeacher.contactCreate.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label>Должность: </label>
+              <select
+                value={position}
+                onChange={(e) => setPosition(e.target.value)}
+                required
+              >
+                <option value="TEACHER">Учитель</option>
+                <option value="ASSISTANT">Ассистент</option>
+              </select>
             </div>
             <button type="submit">Сохранить</button>
             <button type="button" onClick={() => setIsEditing(false)} style={{ marginLeft: '10px' }}>
@@ -123,6 +227,7 @@ const Teachers = () => {
             <th>Имя</th>
             <th>Фамилия</th>
             <th>Должность</th>
+            <th>Телефон</th>
             <th>Действия</th>
           </tr>
         </thead>
@@ -133,6 +238,7 @@ const Teachers = () => {
               <td>{teacher.firstName}</td>
               <td>{teacher.lastName}</td>
               <td>{teacher.position}</td>
+              <td>{teacher.contact?.phoneNumber}</td>
               <td>
                 <button onClick={() => handleEdit(teacher)}>Редактировать</button>
                 <button onClick={() => handleDelete(teacher.id)} style={{ marginLeft: '10px', color: 'red' }}>

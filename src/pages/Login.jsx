@@ -54,19 +54,6 @@ const Login = () => {
               style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
             />
           </div>
-          {isRegistering && (
-             <div style={{ marginBottom: '15px' }}>
-             <label style={{ display: 'block', marginBottom: '5px' }}>Email</label>
-             <input
-               type="email"
-               name="email"
-               value={formData.email}
-               onChange={handleChange}
-               required
-               style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-             />
-           </div>
-          )}
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', marginBottom: '5px' }}>Пароль</label>
             <input
