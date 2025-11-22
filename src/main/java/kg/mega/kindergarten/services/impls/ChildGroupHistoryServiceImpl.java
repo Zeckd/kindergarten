@@ -205,4 +205,33 @@ public class ChildGroupHistoryServiceImpl implements ChildGroupHistoryService {
                         d.getDayOfWeek() != DayOfWeek.SUNDAY)
                 .count();
     }
+
+    @Override
+    public Double getPriceForPeriod(Long childId, String period) {
+        String[] parts = period.split("\\.");
+        if (parts.length != 2) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid period format. Use MM.yyyy");
+        }
+        int month = Integer.parseInt(parts[0]);
+        int year = Integer.parseInt(parts[1]);
+        LocalDate date = LocalDate.of(year, month, 1);
+
+        List<ChildGroupHistory> histories = childGroupHistoryRepo.findAllByChildId(childId);
+
+        for (ChildGroupHistory history : histories) {
+            LocalDate start = history.getStartDate().toLocalDate();
+            LocalDate end = history.getEndDate() != null ? history.getEndDate().toLocalDate() : LocalDate.MAX;
+
+            if ((date.isEqual(start) || date.isAfter(start)) && (date.isEqual(end) || date.isBefore(end))) {
+                return history.getPrice();
+            }
+        }
+
+        Child child = childService.findById(childId);
+        if (child != null && child.getGroup() != null && child.getGroup().getAgeGroup() != null) {
+            return child.getGroup().getAgeGroup().getPrice();
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Price not found for period");
+    }
 }

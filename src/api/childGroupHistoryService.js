@@ -11,6 +11,7 @@ const childGroupHistoryService = {
   delete: (id) => axiosClient.delete('/child-group-history/delete', { params: { id } }),
   getDebt: (childId) => axiosClient.get('/child-group-history/debt', { params: { childId } }),
   generateBill: (childId) => axiosClient.post('/child-group-history/bill', null, { params: { childId } }),
+  generateBillForPeriod: (childId, period) => axiosClient.post('/child-group-history/bill-period', null, { params: { childId, period } }),
   getBillStatus: (billId) => axiosClient.get('/child-group-history/status', { params: { billId } }),
 };
 

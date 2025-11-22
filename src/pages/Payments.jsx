@@ -1,16 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import paymentService from '../api/paymentService';
 import childService from '../api/childService';
+import groupService from '../api/groupService';
+import childGroupHistoryService from '../api/childGroupHistoryService';
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
   const [childrenList, setChildrenList] = useState([]);
+  const [groupsList, setGroupsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showLastPaymentModal, setShowLastPaymentModal] = useState(false);
   const [selectedChildForLastPayment, setSelectedChildForLastPayment] = useState('');
   const [lastPaymentResult, setLastPaymentResult] = useState(null);
+  
+  // QR Wizard State
+  const [showQrWizard, setShowQrWizard] = useState(false);
+  const [qrStep, setQrStep] = useState(1);
+  const [qrData, setQrData] = useState({ groupId: '', childId: '', period: '' });
+  const [qrBill, setQrBill] = useState(null);
+  const [filteredChildren, setFilteredChildren] = useState([]);
+
   const [currentPayment, setCurrentPayment] = useState({
     childId: '',
     paymentSum: '',
@@ -24,12 +35,14 @@ const Payments = () => {
 
   const fetchData = async () => {
     try {
-      const [paymentsRes, childrenRes] = await Promise.all([
+      const [paymentsRes, childrenRes, groupsRes] = await Promise.all([
         paymentService.getAll(),
-        childService.getAll(0, 100)
+        childService.getAll(0, 100),
+        groupService.getAll(0, 100)
       ]);
       setPayments(paymentsRes.data);
       setChildrenList(childrenRes.data);
+      setGroupsList(groupsRes.data);
       setLoading(false);
     } catch (err) {
       setError('Ошибка при загрузке данных');
@@ -110,6 +123,49 @@ const Payments = () => {
     }
   };
 
+  // QR Wizard Handlers
+  const openQrWizard = () => {
+    setShowQrWizard(true);
+    setQrStep(1);
+    setQrData({ groupId: '', childId: '', period: '' });
+    setQrBill(null);
+  };
+
+  const handleQrGroupSelect = async (groupId) => {
+    setQrData({ ...qrData, groupId });
+    try {
+      const res = await childService.getByGroup(groupId);
+      setFilteredChildren(res.data);
+      setQrStep(2);
+    } catch (e) {
+      alert('Ошибка при загрузке детей группы');
+    }
+  };
+
+  const handleQrChildSelect = (childId) => {
+    setQrData({ ...qrData, childId });
+    setQrStep(3);
+  };
+
+  const handleQrPeriodSubmit = async () => {
+    if (!qrData.period) {
+      alert('Введите период');
+      return;
+    }
+    const periodRegex = /^\d{2}\.\d{4}$/;
+    if (!periodRegex.test(qrData.period)) {
+      alert('Неверный формат периода. Используйте MM.yyyy (например, 10.2025)');
+      return;
+    }
+    try {
+      const res = await childGroupHistoryService.generateBillForPeriod(qrData.childId, qrData.period);
+      setQrBill(res.data);
+      setQrStep(4);
+    } catch (e) {
+      alert('Ошибка при генерации QR: ' + (e.response?.data?.message || e.message));
+    }
+  };
+
   if (loading) return <div className="loading">Загрузка...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -150,8 +206,88 @@ const Payments = () => {
           }}>
             Сумма за месяц
           </button>
+          <button className="btn btn-success" onClick={openQrWizard}>
+            QR на оплату
+          </button>
         </div>
       </div>
+
+      {showQrWizard && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
+        }}>
+          <div className="card" style={{ width: '500px', maxWidth: '90%' }}>
+            <h2>QR на оплату (Шаг {qrStep}/4)</h2>
+            
+            {qrStep === 1 && (
+              <div>
+                <h3>Выберите группу</h3>
+                <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                  {groupsList.map(g => (
+                    <button key={g.id} className="btn btn-secondary" style={{ display: 'block', width: '100%', marginBottom: '5px' }} onClick={() => handleQrGroupSelect(g.id)}>
+                      {g.name}
+                    </button>
+                  ))}
+                </div>
+                <button className="btn btn-secondary" style={{ marginTop: '10px' }} onClick={() => setShowQrWizard(false)}>Отмена</button>
+              </div>
+            )}
+
+            {qrStep === 2 && (
+              <div>
+                <h3>Выберите ребенка</h3>
+                <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                  {filteredChildren.length === 0 ? <p>В группе нет детей</p> : 
+                    filteredChildren.map(c => (
+                      <button key={c.id} className="btn btn-secondary" style={{ display: 'block', width: '100%', marginBottom: '5px' }} onClick={() => handleQrChildSelect(c.id)}>
+                        {c.firstName} {c.lastName}
+                      </button>
+                    ))
+                  }
+                </div>
+                <button className="btn btn-secondary" style={{ marginTop: '10px' }} onClick={() => setQrStep(1)}>Назад</button>
+              </div>
+            )}
+
+            {qrStep === 3 && (
+              <div>
+                <h3>Введите период</h3>
+                <div className="form-group">
+                  <label>Период (MM.yyyy)</label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    value={qrData.period}
+                    onChange={(e) => setQrData({ ...qrData, period: e.target.value })}
+                    placeholder="10.2025"
+                  />
+                </div>
+                <div className="table-actions">
+                  <button className="btn btn-primary" onClick={handleQrPeriodSubmit}>Сгенерировать QR</button>
+                  <button className="btn btn-secondary" onClick={() => setQrStep(2)}>Назад</button>
+                </div>
+              </div>
+            )}
+
+            {qrStep === 4 && qrBill && (
+              <div style={{ textAlign: 'center' }}>
+                <h3>Счет на оплату</h3>
+                <div style={{ fontSize: '1.2rem', marginBottom: '10px' }}>
+                  Сумма: <strong style={{ color: '#10b981' }}>{qrBill.amount} сом</strong>
+                </div>
+                {qrBill.qrCode && (
+                  <img src={qrBill.qrCode} alt="QR" style={{ width: '200px', height: '200px', border: '1px solid #ddd', borderRadius: '8px' }} />
+                )}
+                <div style={{ marginTop: '15px' }}>
+                  <a href={qrBill.paymentLink} target="_blank" rel="noopener noreferrer" className="btn btn-primary">Оплатить</a>
+                </div>
+                <button className="btn btn-secondary" style={{ marginTop: '20px' }} onClick={() => setShowQrWizard(false)}>Закрыть</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {showLastPaymentModal && (
         <div style={{

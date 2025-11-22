@@ -6,6 +6,7 @@ public interface BillService {
 
     BillResponseDto generateBill(Long childId);
 
+    BillResponseDto generateBillForPeriod(Long childId, String period);
 
     BillResponseDto getBillStatus(Long billId);
 }

@@ -1,0 +1,82 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< kg.mega:kindergarten >------------------------
+[INFO] Building kindergarten 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ kindergarten ---
+[INFO] Deleting /Users/chyngyz/Desktop/kindergarden/kindergarden/target
+[INFO] 
+[INFO] >>> spring-boot:3.3.0:run (default-cli) > test-compile @ kindergarten >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ kindergarten ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ kindergarten ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 90 source files with javac [debug release 17] to target/classes
+[WARNING] /Users/chyngyz/Desktop/kindergarden/kindergarden/src/main/java/kg/mega/kindergarten/mappers/ParentMapper.java:[13,12] Unmapped target properties: "delete, id, role, contact".
+[WARNING] /Users/chyngyz/Desktop/kindergarden/kindergarden/src/main/java/kg/mega/kindergarten/mappers/TeacherMapper.java:[14,13] Unmapped target properties: "delete, contact, id, position".
+[WARNING] /Users/chyngyz/Desktop/kindergarden/kindergarden/src/main/java/kg/mega/kindergarten/mappers/GroupMapper.java:[16,11] Unmapped target properties: "assistant, children, delete, teacher, id".
+[WARNING] /Users/chyngyz/Desktop/kindergarden/kindergarden/src/main/java/kg/mega/kindergarten/mappers/PaymentMapper.java:[14,13] Unmapped target properties: "delete, id, paymentType".
+[WARNING] /Users/chyngyz/Desktop/kindergarden/kindergarden/src/main/java/kg/mega/kindergarten/mappers/ChildGroupHistoryMapper.java:[16,23] Unmapped target properties: "debtAmount, delete, id, startDate, endDate, price".
+[WARNING] /Users/chyngyz/Desktop/kindergarden/kindergarden/src/main/java/kg/mega/kindergarten/mappers/ContactMapper.java:[13,13] Unmapped target properties: "delete, id".
+[WARNING] /Users/chyngyz/Desktop/kindergarden/kindergarden/src/main/java/kg/mega/kindergarten/mappers/AgeGroupMapper.java:[12,14] Unmapped target properties: "delete, id".
+[WARNING] /Users/chyngyz/Desktop/kindergarden/kindergarden/src/main/java/kg/mega/kindergarten/mappers/ChildMapper.java:[20,11] Unmapped target properties: "groupId, delete, id".
+[INFO] /Users/chyngyz/Desktop/kindergarden/kindergarden/src/main/java/kg/mega/kindergarten/models/dtos/TeacherDto.java: Some input files use or override a deprecated API.
+[INFO] /Users/chyngyz/Desktop/kindergarden/kindergarden/src/main/java/kg/mega/kindergarten/models/dtos/TeacherDto.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ kindergarten ---
+[INFO] skip non existing resourceDirectory /Users/chyngyz/Desktop/kindergarden/kindergarden/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ kindergarten ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 1 source file with javac [debug release 17] to target/test-classes
+[INFO] 
+[INFO] <<< spring-boot:3.3.0:run (default-cli) < test-compile @ kindergarten <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.3.0:run (default-cli) @ kindergarten ---
+[INFO] Attaching agents: []
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2025-11-22T10:59:02.582+06:00  INFO 71985 --- [kindergarten] [           main] k.m.k.KindergartenApplication            : Starting KindergartenApplication using Java 21.0.4 with PID 71985 (/Users/chyngyz/Desktop/kindergarden/kindergarden/target/classes started by chyngyz in /Users/chyngyz/Desktop/kindergarden/kindergarden)
+2025-11-22T10:59:02.583+06:00  INFO 71985 --- [kindergarten] [           main] k.m.k.KindergartenApplication            : No active profile set, falling back to 1 default profile: "default"
+2025-11-22T10:59:02.903+06:00  INFO 71985 --- [kindergarten] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-22T10:59:02.936+06:00  INFO 71985 --- [kindergarten] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 30 ms. Found 10 JPA repository interfaces.
+2025-11-22T10:59:03.227+06:00  INFO 71985 --- [kindergarten] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-11-22T10:59:03.232+06:00  INFO 71985 --- [kindergarten] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-22T10:59:03.232+06:00  INFO 71985 --- [kindergarten] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-11-22T10:59:03.256+06:00  INFO 71985 --- [kindergarten] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-11-22T10:59:03.256+06:00  INFO 71985 --- [kindergarten] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 660 ms
+2025-11-22T10:59:03.272+06:00  INFO 71985 --- [kindergarten] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-22T10:59:03.363+06:00  INFO 71985 --- [kindergarten] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:kindergarten_db user=SA
+2025-11-22T10:59:03.363+06:00  INFO 71985 --- [kindergarten] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-22T10:59:03.370+06:00  INFO 71985 --- [kindergarten] [           main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:kindergarten_db'
+2025-11-22T10:59:03.431+06:00  INFO 71985 --- [kindergarten] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-22T10:59:03.452+06:00  INFO 71985 --- [kindergarten] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-11-22T10:59:03.464+06:00  INFO 71985 --- [kindergarten] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-11-22T10:59:03.574+06:00  INFO 71985 --- [kindergarten] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-22T10:59:03.593+06:00  WARN 71985 --- [kindergarten] [           main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-11-22T10:59:03.995+06:00  INFO 71985 --- [kindergarten] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-22T10:59:04.037+06:00  INFO 71985 --- [kindergarten] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-22T10:59:04.169+06:00  INFO 71985 --- [kindergarten] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-22T10:59:04.613+06:00  WARN 71985 --- [kindergarten] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-22T10:59:04.640+06:00  INFO 71985 --- [kindergarten] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name appUserDetailsService
+2025-11-22T10:59:04.821+06:00  INFO 71985 --- [kindergarten] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@7de54be7, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@22b9f45f, org.springframework.security.web.context.SecurityContextHolderFilter@1946d235, org.springframework.security.web.header.HeaderWriterFilter@17765082, org.springframework.web.filter.CorsFilter@60c5c115, org.springframework.security.web.authentication.logout.LogoutFilter@4151d8a3, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@f5a1b27, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@7d07e6aa, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1e620fe7, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4f7bc46e, org.springframework.security.web.access.ExceptionTranslationFilter@44f4c619, org.springframework.security.web.access.intercept.AuthorizationFilter@1ff02deb]
+2025-11-22T10:59:04.985+06:00  INFO 71985 --- [kindergarten] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path '/'
+2025-11-22T10:59:04.990+06:00  INFO 71985 --- [kindergarten] [           main] k.m.k.KindergartenApplication            : Started KindergartenApplication in 2.531 seconds (process running for 2.66)
+ Администратор создан: username=admin, password=admin123
+2025-11-22T10:59:24.160+06:00  INFO 71985 --- [kindergarten] [nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-22T10:59:24.160+06:00  INFO 71985 --- [kindergarten] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-22T10:59:24.161+06:00  INFO 71985 --- [kindergarten] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+Creating child: ChildSaveDto[firstName=Alikbek, lastName=Mukanbetov, patronymic=gdfgsdf, dateOfBirth=2020-12-12, group=null, parentsId=[]]

@@ -22,4 +22,5 @@ public interface ChildGroupHistoryService {
 
     ChildGroupHistoryDebtDto findDebtByChildId(Long childId);
 
+    Double getPriceForPeriod(Long childId, String period);
 }

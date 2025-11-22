@@ -44,8 +44,9 @@ public class BillServiceImpl implements BillService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "У ребенка нет задолженности");
         }
 
-        billRepo.findLatestPendingByChildId(childId).ifPresent(bill -> {
-
+        billRepo.findLatestPendingByChildId(childId).ifPresent(existingBill -> {
+            existingBill.setStatus(BillStatus.CANCELLED);
+            billRepo.save(existingBill);
         });
 
         Bill bill = new Bill();
@@ -67,6 +68,45 @@ public class BillServiceImpl implements BillService {
         bill.setStatus(BillStatus.PENDING);
         bill.setCreatedAt(LocalDateTime.now());
         bill.setExpiresAt(LocalDateTime.now().plusDays(7)); // Счет действителен 7 дней
+
+        bill = billRepo.save(bill);
+
+        return new BillResponseDto(
+                bill.getId(),
+                child.getId(),
+                bill.getAmount(),
+                bill.getPaymentLink(),
+                bill.getQrCode(),
+                bill.getStatus()
+        );
+    }
+
+    @Override
+    @Transactional
+    public BillResponseDto generateBillForPeriod(Long childId, String period) {
+        Child child = childService.findById(childId);
+        if (child == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ребенок не найден");
+        }
+
+        Double amount = childGroupHistoryService.getPriceForPeriod(childId, period);
+
+        Bill bill = new Bill();
+        bill.setChild(child);
+        bill.setAmount(amount);
+
+        String billToken = UUID.randomUUID().toString();
+        String paymentLink = String.format("https://pay.example.com/bill/%s?amount=%.2f&childId=%d&period=%s",
+                billToken, amount, childId, period);
+        bill.setPaymentLink(paymentLink);
+
+        String qrCodeUrl = String.format("https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=%s",
+                paymentLink.replace(" ", "%20"));
+        bill.setQrCode(qrCodeUrl);
+
+        bill.setStatus(BillStatus.PENDING);
+        bill.setCreatedAt(LocalDateTime.now());
+        bill.setExpiresAt(LocalDateTime.now().plusDays(7));
 
         bill = billRepo.save(bill);
 

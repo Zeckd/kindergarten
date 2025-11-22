@@ -74,6 +74,12 @@ public class ChildGroupHistoryController implements CRUDController<ChildGroupHis
         return billService.generateBill(childId);
     }
 
+    @Operation(summary = "Создать счет на оплату для ребенка за период")
+    @PostMapping("/bill-period")
+    public BillResponseDto generateBillForPeriod(@RequestParam Long childId, @RequestParam String period) {
+        return billService.generateBillForPeriod(childId, period);
+    }
+
     @Operation(summary = "Получить статус счета по ID счета")
     @GetMapping("/status")
     public BillResponseDto getBillStatus(@RequestParam Long billId) {
