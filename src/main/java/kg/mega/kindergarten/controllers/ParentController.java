@@ -22,35 +22,47 @@ public class ParentController implements CRUDControllerWithStatus<ParentDto, Par
         this.parentService = parentService;
     }
 
+    @Override
+    @PostMapping("/create")
     @Operation(summary = "Создать нового родителя с ролью")
     public ParentDto create(
-           ParentSaveDto parentCreateDto,
+           @RequestBody ParentSaveDto parentCreateDto,
             @Parameter(description = "Роль родителя", required = true)
-            Role role) {
+            @RequestParam Role role) {
         return parentService.create(parentCreateDto, role);
     }
 
     @Override
+    @PutMapping("/update")
     @Operation(summary = "Обновить данные родителя")
-    public ParentDto update(Long id, ParentSaveDto parentSaveDto,Role role, Delete delete) {
+    public ParentDto update(@RequestParam Long id, @RequestBody ParentSaveDto parentSaveDto, @RequestParam Role role, @RequestParam Delete delete) {
         return parentService.update(id ,parentSaveDto,role, delete);
     }
 
     @Override
+    @DeleteMapping("/delete")
     @Operation(summary = "Удалить родителя по ID")
-    public ParentDto delete(Long id) {
+    public ParentDto delete(@RequestParam Long id) {
         return parentService.delete(id);
     }
 
     @Override
+    @GetMapping("/get-list")
     @Operation(summary = "Получить список всех родителей")
-    public List<Parent> allList(int page, int size) {
+    public List<Parent> allList(@RequestParam int page, @RequestParam int size) {
         return parentService.findAllList(page, size);
     }
 
     @Override
+    @GetMapping("/find-by-id")
     @Operation(summary = "Найти родителя по ID")
-    public Parent findById(Long id) {
+    public Parent findById(@RequestParam Long id) {
         return parentService.findById(id);
+    }
+
+    @Operation(summary = "Получить список детей родителя")
+    @GetMapping("/children")
+    public List<Object> getParentChildren(@RequestParam Long parentId) {
+        return parentService.findChildrenByParentId(parentId);
     }
 }

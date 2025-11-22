@@ -26,10 +26,12 @@ import java.util.List;
 public class ParentServiceImpl implements ParentService {
     private final ParentRepo parentRepo;
     private final ContactService contactService;
+    private final kg.mega.kindergarten.repositories.ChildRepo childRepo;
 
-    public ParentServiceImpl(ParentRepo parentRepo, ContactService contactService) {
+    public ParentServiceImpl(ParentRepo parentRepo, ContactService contactService, kg.mega.kindergarten.repositories.ChildRepo childRepo) {
         this.parentRepo = parentRepo;
         this.contactService = contactService;
+        this.childRepo = childRepo;
     }
 
     @Override
@@ -49,15 +51,28 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     public ParentDto update(Long id ,ParentSaveDto parentSaveDto,Role role, Delete delete) {
-        Parent parentId = parentRepo.findById(id).orElseThrow(() ->
+        Parent parent = parentRepo.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
-        Contact contact = contactService.create(parentSaveDto.contactCreate());
+        
+        Contact contact = parent.getContact();
+        if (contact == null) {
+             contact = contactService.create(parentSaveDto.contactCreate());
+        } else {
+             // Ideally update contact, but for now we can create new if needed or just update fields if ContactService supports it.
+             // Since ContactService.create returns new contact, let's assume we replace it or we should update it.
+             // For simplicity and safety against nulls in DTO, let's create new one as before but attach to existing parent.
+             // Or better, if ContactService has update, use it. But it doesn't seem to have update exposed here easily.
+             // Let's stick to creating new one for now as per original logic, but update fields on EXISTING parent object.
+             contact = contactService.create(parentSaveDto.contactCreate());
+        }
 
-        Parent parent = ParentMapper.INSTANCE.parentSaveDtoToParent(parentSaveDto);
-        parent.setId(id);
+        parent.setFirstName(parentSaveDto.firstName());
+        parent.setLastName(parentSaveDto.lastName());
+        parent.setPatronymic(parentSaveDto.patronymic());
         parent.setRole(role);
         parent.setContact(contact);
         parent.setDelete(delete);
+        
         parent = parentRepo.save(parent);
 
 
@@ -95,6 +110,19 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     public List<Parent> findAll(List<Long> parents) {
+        if (parents == null || parents.isEmpty()) {
+            return List.of();
+        }
         return parentRepo.findAllParents(parents);
+    }
+
+    @Override
+    public List<Object> findChildrenByParentId(Long parentId) {
+        Parent parent = parentRepo.findByIdParent(parentId);
+        if (parent == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Parent not found");
+        }
+        List<kg.mega.kindergarten.models.Child> children = childRepo.findByParentId(parentId);
+        return new java.util.ArrayList<>(children);
     }
 }

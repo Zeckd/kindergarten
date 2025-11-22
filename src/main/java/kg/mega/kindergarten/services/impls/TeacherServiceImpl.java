@@ -25,10 +25,12 @@ import java.util.List;
 public class TeacherServiceImpl implements TeacherService {
     private final TeacherRepo teacherRepo;
     private final ContactService contactService;
+    private final kg.mega.kindergarten.repositories.GroupRepo groupRepo;
 
-    public TeacherServiceImpl(TeacherRepo teacherRepo, ContactService contactService) {
+    public TeacherServiceImpl(TeacherRepo teacherRepo, ContactService contactService, kg.mega.kindergarten.repositories.GroupRepo groupRepo) {
         this.teacherRepo = teacherRepo;
         this.contactService = contactService;
+        this.groupRepo = groupRepo;
     }
 
     @Override
@@ -47,14 +49,19 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherDto update(Long id, TeacherSaveDto teacherSaveDto,Position position, Delete delete) {
-        Teacher teacherId = teacherRepo.findById(id).orElseThrow(() ->
+        Teacher teacher = teacherRepo.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
+        
         Contact contact = contactService.create(teacherSaveDto.contactCreate());
-        Teacher teacher = TeacherMapper.INSTANCE.teacherSaveDtoToTeacher(teacherSaveDto);
-        teacher.setId(id);
+        
+        teacher.setFirstName(teacherSaveDto.firstName());
+        teacher.setLastName(teacherSaveDto.lastName());
+        teacher.setPatronymic(teacherSaveDto.patronymic());
+        teacher.setDateOfBirth(teacherSaveDto.dateOfBirth());
         teacher.setPosition(position);
         teacher.setContact(contact);
         teacher.setDelete(delete);
+        
         teacher = teacherRepo.save(teacher);
 
 
@@ -95,5 +102,21 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public Teacher findByIdForGroup(Long id, Position position) {
         return teacherRepo.findByIdTeacher(id);
+    }
+
+    @Override
+    public Object findGroupByTeacherId(Long teacherId) {
+        Teacher teacher = teacherRepo.findByIdTeacher(teacherId);
+        if (teacher == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found");
+        }
+        
+        if (teacher.getPosition() == Position.TEACHER) {
+            return groupRepo.findByTeacher_Id(teacherId);
+        } else if (teacher.getPosition() == Position.ASSISTANT) {
+            return groupRepo.findByAssistant_Id(teacherId);
+        }
+        
+        return null;
     }
 }

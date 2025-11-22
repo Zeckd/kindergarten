@@ -41,4 +41,10 @@ public class AuthController {
     public List<AppUser> getAll() {
         return userService.getAll();
     }
+
+    @Operation(summary = "Получить текущего пользователя")
+    @GetMapping("/me")
+    public String getCurrentUser(java.security.Principal principal) {
+        return principal.getName();
+    }
 }

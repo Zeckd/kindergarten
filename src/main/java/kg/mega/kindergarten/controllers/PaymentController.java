@@ -9,8 +9,10 @@ import kg.mega.kindergarten.models.Payment;
 import kg.mega.kindergarten.models.dtos.PaymentSaveDto;
 import kg.mega.kindergarten.models.dtos.PaymentDto;
 import kg.mega.kindergarten.services.PaymentService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,37 +25,64 @@ public class PaymentController implements CRUDControllerWithStatus<PaymentDto, P
         this.paymentService = paymentService;
     }
 
+    @Override
+    @PostMapping("/create")
     @Operation(summary = "Создать платеж с типом оплаты")
     public PaymentDto create(
-            PaymentSaveDto paymentCreateDto,
+            @RequestBody PaymentSaveDto paymentCreateDto,
             @Parameter(description = "Тип оплаты", required = true)
-            PaymentType paymentType) {
+            @RequestParam PaymentType paymentType) {
         return paymentService.create(paymentCreateDto, paymentType);
     }
 
     @Override
+    @PutMapping("/update")
     @Operation(summary = "Обновить платеж")
-    public PaymentDto update(Long id, PaymentSaveDto paymentSaveDto,PaymentType paymentType, Delete delete) {
+    public PaymentDto update(@RequestParam Long id, @RequestBody PaymentSaveDto paymentSaveDto, @RequestParam PaymentType paymentType, @RequestParam Delete delete) {
         return paymentService.update(id ,paymentSaveDto, paymentType,delete);
 
     }
 
 
     @Override
+    @DeleteMapping("/delete")
     @Operation(summary = "Удалить платеж по ID")
-    public PaymentDto delete(Long id) {
+    public PaymentDto delete(@RequestParam Long id) {
         return paymentService.delete(id);
     }
 
     @Override
+    @GetMapping("/get-list")
     @Operation(summary = "Получить список всех платежей")
-    public List<Payment> allList(int page, int size) {
+    public List<Payment> allList(@RequestParam int page, @RequestParam int size) {
         return paymentService.findAllList(page, size);
     }
 
     @Override
+    @GetMapping("/find-by-id")
     @Operation(summary = "Найти платеж по ID")
-    public Payment findById(Long id) {
+    public Payment findById(@RequestParam Long id) {
         return paymentService.findById(id);
+    }
+
+    @Operation(summary = "Получить список платежей по ID ребенка")
+    @GetMapping("/by-child")
+    public List<Payment> getPaymentsByChild(@RequestParam Long childId) {
+        return paymentService.findAllByChildId(childId);
+    }
+
+    @Operation(summary = "Получить сумму платежей ребенка за месяц")
+    @GetMapping("/sum-by-month")
+    public Double getSumByMonth(
+            @RequestParam Long childId,
+            @RequestParam int month,
+            @RequestParam int year) {
+        return paymentService.sumPaymentsByChildIdAndMonth(childId, month, year);
+    }
+
+    @Operation(summary = "Получить последний платеж ребенка")
+    @GetMapping("/last-payment")
+    public Payment getLastPayment(@RequestParam Long childId) {
+        return paymentService.findByChildId(childId);
     }
 }

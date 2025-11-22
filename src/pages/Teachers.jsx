@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import teacherService from '../api/teacherService';
+import groupService from '../api/groupService';
 
 const Teachers = () => {
   const [teachers, setTeachers] = useState([]);
+  const [groupsList, setGroupsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -15,21 +17,26 @@ const Teachers = () => {
       phoneNumber: '',
       secondaryPhoneNumber: '',
       email: ''
-    }
+    },
+    groupId: ''
   });
   const [position, setPosition] = useState('TEACHER');
 
   useEffect(() => {
-    fetchTeachers();
+    fetchData();
   }, []);
 
-  const fetchTeachers = async () => {
+  const fetchData = async () => {
     try {
-      const response = await teacherService.getAll(0, 100); // Fetching first 100 for now
-      setTeachers(response.data);
+      const [teachersRes, groupsRes] = await Promise.all([
+        teacherService.getAll(0, 100),
+        groupService.getAll(0, 100)
+      ]);
+      setTeachers(teachersRes.data);
+      setGroupsList(groupsRes.data);
       setLoading(false);
     } catch (err) {
-      setError('Ошибка при загрузке учителей');
+      setError('Ошибка при загрузке данных');
       setLoading(false);
     }
   };
@@ -38,7 +45,7 @@ const Teachers = () => {
     if (window.confirm('Вы уверены, что хотите удалить этого учителя?')) {
       try {
         await teacherService.delete(id);
-        fetchTeachers();
+        fetchData();
       } catch (err) {
         alert('Ошибка при удалении');
       }
@@ -56,7 +63,8 @@ const Teachers = () => {
         phoneNumber: teacher.contact?.phoneNumber || '',
         secondaryPhoneNumber: teacher.contact?.secondaryPhoneNumber || '',
         email: teacher.contact?.email || ''
-      }
+      },
+      groupId: teacher.group ? teacher.group.id : ''
     });
     setPosition(teacher.position);
     setIsEditing(true);
@@ -72,7 +80,8 @@ const Teachers = () => {
         phoneNumber: '',
         secondaryPhoneNumber: '',
         email: ''
-      }
+      },
+      groupId: ''
     });
     setPosition('TEACHER');
     setIsEditing(true);
@@ -85,7 +94,8 @@ const Teachers = () => {
       lastName: currentTeacher.lastName,
       patronymic: currentTeacher.patronymic,
       dateOfBirth: currentTeacher.dateOfBirth,
-      contactCreate: currentTeacher.contactCreate
+      contactCreate: currentTeacher.contactCreate,
+      groupId: currentTeacher.groupId
     };
 
     try {
@@ -95,7 +105,7 @@ const Teachers = () => {
         await teacherService.create(payload, position);
       }
       setIsEditing(false);
-      fetchTeachers();
+      fetchData();
     } catch (err) {
       alert('Ошибка при сохранении: ' + (err.response?.data?.message || err.message));
     }
@@ -117,138 +127,205 @@ const Teachers = () => {
     }
   };
 
-  if (loading) return <div>Загрузка...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="loading">Загрузка...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div>
-      <h1>Учителя</h1>
-      <button onClick={handleCreate} style={{ marginBottom: '20px', padding: '10px', cursor: 'pointer' }}>
-        Добавить учителя
-      </button>
+      <div className="page-header">
+        <h1>👨‍🏫 Учителя</h1>
+        <button className="btn btn-primary" onClick={handleCreate}>
+          + Добавить учителя
+        </button>
+      </div>
 
       {isEditing && (
-        <div className="form-container" style={{ marginBottom: '20px', padding: '20px', border: '1px solid #ccc' }}>
-          <h2>{currentTeacher.id ? 'Редактировать' : 'Создать'} учителя</h2>
+        <div className="card">
+          <h2>{currentTeacher.id ? 'Редактировать' : 'Добавить'} учителя</h2>
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Имя: </label>
-              <input
-                type="text"
-                name="firstName"
-                value={currentTeacher.firstName}
-                onChange={handleChange}
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Имя</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="firstName"
+                  value={currentTeacher.firstName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Введите имя"
+                />
+              </div>
+              <div className="form-group">
+                <label>Фамилия</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="lastName"
+                  value={currentTeacher.lastName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Введите фамилию"
+                />
+              </div>
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Фамилия: </label>
-              <input
-                type="text"
-                name="lastName"
-                value={currentTeacher.lastName}
-                onChange={handleChange}
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Отчество</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="patronymic"
+                  value={currentTeacher.patronymic}
+                  onChange={handleChange}
+                  placeholder="Введите отчество"
+                />
+              </div>
+              <div className="form-group">
+                <label>Дата рождения</label>
+                <input
+                  className="form-control"
+                  type="date"
+                  name="dateOfBirth"
+                  value={currentTeacher.dateOfBirth}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Отчество: </label>
-              <input
-                type="text"
-                name="patronymic"
-                value={currentTeacher.patronymic}
-                onChange={handleChange}
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Телефон</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="contactCreate.phoneNumber"
+                  value={currentTeacher.contactCreate.phoneNumber}
+                  onChange={handleChange}
+                  required
+                  placeholder="+996700123456"
+                />
+              </div>
+              <div className="form-group">
+                <label>Доп. телефон</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="contactCreate.secondaryPhoneNumber"
+                  value={currentTeacher.contactCreate.secondaryPhoneNumber}
+                  onChange={handleChange}
+                  placeholder="+996555123456"
+                />
+              </div>
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Дата рождения: </label>
-              <input
-                type="date"
-                name="dateOfBirth"
-                value={currentTeacher.dateOfBirth}
-                onChange={handleChange}
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  className="form-control"
+                  type="email"
+                  name="contactCreate.email"
+                  value={currentTeacher.contactCreate.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="example@mail.com"
+                />
+              </div>
+              <div className="form-group">
+                <label>Должность</label>
+                <select
+                  className="form-control"
+                  value={position}
+                  onChange={(e) => setPosition(e.target.value)}
+                  required
+                >
+                  <option value="TEACHER">Учитель</option>
+                  <option value="ASSISTANT">Ассистент</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Группа</label>
+                <select
+                  className="form-control"
+                  name="groupId"
+                  value={currentTeacher.groupId}
+                  onChange={handleChange}
+                >
+                  <option value="">Выберите группу</option>
+                  {groupsList.map(g => (
+                    <option key={g.id} value={g.id}>{g.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Телефон (+996...): </label>
-              <input
-                type="text"
-                name="contactCreate.phoneNumber"
-                value={currentTeacher.contactCreate.phoneNumber}
-                onChange={handleChange}
-                required
-                placeholder="+996700123456"
-              />
+            <div className="table-actions">
+              <button type="submit" className="btn btn-success">Сохранить</button>
+              <button type="button" className="btn btn-secondary" onClick={() => setIsEditing(false)}>
+                Отмена
+              </button>
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Доп. телефон: </label>
-              <input
-                type="text"
-                name="contactCreate.secondaryPhoneNumber"
-                value={currentTeacher.contactCreate.secondaryPhoneNumber}
-                onChange={handleChange}
-                placeholder="+996555123456"
-              />
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Email: </label>
-              <input
-                type="email"
-                name="contactCreate.email"
-                value={currentTeacher.contactCreate.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Должность: </label>
-              <select
-                value={position}
-                onChange={(e) => setPosition(e.target.value)}
-                required
-              >
-                <option value="TEACHER">Учитель</option>
-                <option value="ASSISTANT">Ассистент</option>
-              </select>
-            </div>
-            <button type="submit">Сохранить</button>
-            <button type="button" onClick={() => setIsEditing(false)} style={{ marginLeft: '10px' }}>
-              Отмена
-            </button>
           </form>
         </div>
       )}
 
-      <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Имя</th>
-            <th>Фамилия</th>
-            <th>Должность</th>
-            <th>Телефон</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-          {teachers.map((teacher) => (
-            <tr key={teacher.id}>
-              <td>{teacher.id}</td>
-              <td>{teacher.firstName}</td>
-              <td>{teacher.lastName}</td>
-              <td>{teacher.position}</td>
-              <td>{teacher.contact?.phoneNumber}</td>
-              <td>
-                <button onClick={() => handleEdit(teacher)}>Редактировать</button>
-                <button onClick={() => handleDelete(teacher.id)} style={{ marginLeft: '10px', color: 'red' }}>
-                  Удалить
-                </button>
-              </td>
+      <div className="table-container">
+        <table className="styled-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Имя</th>
+              <th>Фамилия</th>
+              <th>Отчество</th>
+              <th>Должность</th>
+              <th>Телефон</th>
+              <th>Email</th>
+              <th>Действия</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {teachers.length === 0 ? (
+              <tr>
+                <td colSpan="8" className="empty-state">
+                  <h3>Список пуст</h3>
+                  <p>Добавьте первого учителя</p>
+                </td>
+              </tr>
+            ) : (
+              teachers.map((teacher) => (
+                <tr key={teacher.id}>
+                  <td><span className="badge badge-primary">#{teacher.id}</span></td>
+                  <td>{teacher.firstName}</td>
+                  <td>{teacher.lastName}</td>
+                  <td>{teacher.patronymic || '—'}</td>
+                  <td><span className="badge badge-success">{teacher.position}</span></td>
+                  <td>{teacher.contact?.phoneNumber || '—'}</td>
+                  <td>{teacher.contact?.email || '—'}</td>
+                  <td>
+                    <div className="table-actions">
+                      <button className="btn btn-secondary btn-sm" onClick={() => handleEdit(teacher)}>
+                        Ред.
+                      </button>
+                      <button className="btn btn-info btn-sm" onClick={async () => {
+                        try {
+                          const res = await teacherService.getGroup(teacher.id);
+                          alert('Группа: ' + JSON.stringify(res.data, null, 2));
+                        } catch (e) {
+                          alert('Ошибка при получении группы');
+                        }
+                      }}>
+                        Группа
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(teacher.id)}>
+                        Удалить
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

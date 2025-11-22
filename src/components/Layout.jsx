@@ -1,23 +1,23 @@
 import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
-import './Layout.css'; // We'll create this css file
+import { NavLink, Outlet } from 'react-router-dom';
+import './Layout.css';
 
 const Layout = () => {
   return (
     <div className="layout">
       <aside className="sidebar">
-        <h2>Kindergarden</h2>
+        <h2>Kindergarten</h2>
         <nav>
           <ul>
-            <li><Link to="/">Главная</Link></li>
-            <li><Link to="/teachers">Учителя</Link></li>
-            <li><Link to="/parents">Родители</Link></li>
-            <li><Link to="/children">Дети</Link></li>
-            <li><Link to="/groups">Группы</Link></li>
-            <li><Link to="/payments">Платежи</Link></li>
-            <li><Link to="/age-groups">Возрастные группы</Link></li>
-            <li><Link to="/history">История групп</Link></li>
-            <li><Link to="/users">Пользователи</Link></li>
+            <li><NavLink to="/" end>Главная</NavLink></li>
+            <li><NavLink to="/teachers">Учителя</NavLink></li>
+            <li><NavLink to="/parents">Родители</NavLink></li>
+            <li><NavLink to="/children">Дети</NavLink></li>
+            <li><NavLink to="/groups">Группы</NavLink></li>
+            <li><NavLink to="/payments">Платежи</NavLink></li>
+            <li><NavLink to="/age-groups">Возрастные группы</NavLink></li>
+            <li><NavLink to="/history">История групп</NavLink></li>
+            <li><NavLink to="/users">Пользователи</NavLink></li>
           </ul>
         </nav>
       </aside>

@@ -9,8 +9,10 @@ import kg.mega.kindergarten.models.Teacher;
 import kg.mega.kindergarten.models.dtos.TeacherSaveDto;
 import kg.mega.kindergarten.models.dtos.TeacherDto;
 import kg.mega.kindergarten.services.TeacherService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,17 +26,18 @@ public class TeacherController implements CRUDControllerWithStatus<TeacherDto, T
     }
 
     @Override
+    @PostMapping("/create")
     @Operation(summary = "Создать нового учителя с должностью")
     public TeacherDto create(
-            TeacherSaveDto teacherCreateDto,
-            @Parameter(description = "Должность учителя", required = true) Position position) {
+            @RequestBody TeacherSaveDto teacherCreateDto,
+            @Parameter(description = "Должность учителя", required = true) @RequestParam Position position) {
         return teacherService.create(teacherCreateDto, position);
     }
 
     @Override
+    @PutMapping("/update")
     @Operation(summary = "Обновить данные учителя")
-
-    public TeacherDto update(Long id, TeacherSaveDto teacherSaveDto, Position position, Delete delete) {
+    public TeacherDto update(@RequestParam Long id, @RequestBody TeacherSaveDto teacherSaveDto, @RequestParam Position position, @RequestParam Delete delete) {
         return teacherService.update(id,teacherSaveDto,position, delete);
 
 
@@ -43,20 +46,29 @@ public class TeacherController implements CRUDControllerWithStatus<TeacherDto, T
 
 
     @Override
+    @DeleteMapping("/delete")
     @Operation(summary = "Удалить учителя по ID")
-    public TeacherDto delete(Long id) {
+    public TeacherDto delete(@RequestParam Long id) {
         return teacherService.delete(id);
     }
 
     @Override
+    @GetMapping("/get-list")
     @Operation(summary = "Получить список всех учителей")
-    public List<Teacher> allList(int page, int size) {
+    public List<Teacher> allList(@RequestParam int page, @RequestParam int size) {
         return teacherService.findAllList(page, size);
     }
 
     @Override
+    @GetMapping("/find-by-id")
     @Operation(summary = "Найти учителя по ID")
-    public Teacher findById(Long id) {
+    public Teacher findById(@RequestParam Long id) {
         return teacherService.findById(id);
+    }
+
+    @Operation(summary = "Получить группу, в которой работает учитель")
+    @GetMapping("/group")
+    public Object getTeacherGroup(@RequestParam Long teacherId) {
+        return teacherService.findGroupByTeacherId(teacherId);
     }
 }

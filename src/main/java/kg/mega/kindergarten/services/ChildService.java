@@ -20,4 +20,8 @@ public interface ChildService {
     List<Child> findByIdToList(Long childId);
 
     ChildDto update(Long id, ChildSaveDto childSaveDto, Delete delete);
+
+    List<Child> findByGroupId(Long groupId);
+
+    List<Child> findByParentId(Long parentId);
 }

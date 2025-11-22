@@ -20,4 +20,6 @@ public interface TeacherService {
     Teacher findById(Long id);
     Teacher findByIdForGroup(Long id, Position position);
 
+    Object findGroupByTeacherId(Long teacherId);
+
 }

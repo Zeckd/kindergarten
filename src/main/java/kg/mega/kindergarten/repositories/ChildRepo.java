@@ -22,4 +22,10 @@ public interface ChildRepo extends JpaRepository<Child, Long> {
     @Query("select u from  Child u where u.delete = 0 and u.id = :childId")
 
     List<Child> findByIdToList(Long childId);
+
+    @Query("select u from Child u where u.delete = 0 and u.group.id = :groupId")
+    List<Child> findByGroupId(Long groupId);
+
+    @Query("select u from Child u join u.parents p where u.delete = 0 and p.id = :parentId")
+    List<Child> findByParentId(Long parentId);
 }

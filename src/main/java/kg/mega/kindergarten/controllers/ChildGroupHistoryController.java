@@ -25,34 +25,40 @@ public class ChildGroupHistoryController implements CRUDController<ChildGroupHis
         this.billService = billService;
     }
 
+    @Override
+    @PostMapping("/create")
     @Operation(summary = "Создать запись истории группы ребенка")
-    public ChildGroupHistoryDto create(ChildGroupHistorySaveDto childGroupHistoryCreateDto) {
+    public ChildGroupHistoryDto create(@RequestBody ChildGroupHistorySaveDto childGroupHistoryCreateDto) {
         return childGroupHistoryService.create(childGroupHistoryCreateDto);
     }
 
     @Override
+    @PutMapping("/update")
     @Operation(summary = "Обновить запись истории группы ребенка")
-    public ChildGroupHistoryDto update(Long id, ChildGroupHistorySaveDto childGroupHistorySaveDto, Delete delete) {
+    public ChildGroupHistoryDto update(@RequestParam Long id, @RequestBody ChildGroupHistorySaveDto childGroupHistorySaveDto, @RequestParam Delete delete) {
         return childGroupHistoryService.update(id,childGroupHistorySaveDto, delete);
 
     }
 
 
     @Override
+    @DeleteMapping("/delete")
     @Operation(summary = "Удалить запись истории группы ребенка по ID")
-    public ChildGroupHistoryDto delete(Long id) {
+    public ChildGroupHistoryDto delete(@RequestParam Long id) {
         return childGroupHistoryService.delete(id);
     }
 
     @Override
+    @GetMapping("/get-list")
     @Operation(summary = "Получить список всех записей истории групп")
-    public List<ChildGroupHistory> allList(int page, int size) {
+    public List<ChildGroupHistory> allList(@RequestParam int page, @RequestParam int size) {
         return childGroupHistoryService.findAllList(page, size);
     }
 
     @Override
+    @GetMapping("/find-by-id")
     @Operation(summary = "Найти запись истории группы ребенка по ID")
-    public ChildGroupHistory findById(Long id) {
+    public ChildGroupHistory findById(@RequestParam Long id) {
         return childGroupHistoryService.findById(id);
     }
 

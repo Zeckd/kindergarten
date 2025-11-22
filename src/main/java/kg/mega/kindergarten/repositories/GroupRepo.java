@@ -19,4 +19,7 @@ public interface GroupRepo extends JpaRepository<Group, Long> {
     List<Group> findAllList(Pageable pageable);
     boolean existsByTeacher_Id(Long teacherId);
     boolean existsByAssistant_Id(Long assistantId);
+    
+    Group findByTeacher_Id(Long teacherId);
+    Group findByAssistant_Id(Long assistantId);
 }

@@ -6,7 +6,7 @@ const AgeGroups = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentAgeGroup, setCurrentAgeGroup] = useState({ name: '', minAge: '', maxAge: '' });
+  const [currentAgeGroup, setCurrentAgeGroup] = useState({ name: '', ageGroup: '', price: '' });
 
   useEffect(() => {
     fetchAgeGroups();
@@ -40,17 +40,23 @@ const AgeGroups = () => {
   };
 
   const handleCreate = () => {
-    setCurrentAgeGroup({ name: '', minAge: '', maxAge: '' });
+    setCurrentAgeGroup({ name: '', ageGroup: '', price: '' });
     setIsEditing(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      name: currentAgeGroup.name,
+      ageGroup: currentAgeGroup.ageGroup,
+      price: currentAgeGroup.price
+    };
+
     try {
       if (currentAgeGroup.id) {
-        await ageGroupService.update(currentAgeGroup);
+        await ageGroupService.update({ ...payload, id: currentAgeGroup.id });
       } else {
-        await ageGroupService.create(currentAgeGroup);
+        await ageGroupService.create(payload);
       }
       setIsEditing(false);
       fetchAgeGroups();
@@ -64,85 +70,113 @@ const AgeGroups = () => {
     setCurrentAgeGroup({ ...currentAgeGroup, [name]: value });
   };
 
-  if (loading) return <div>Загрузка...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="loading">Загрузка...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div>
-      <h1>Возрастные группы</h1>
-      <button onClick={handleCreate} style={{ marginBottom: '20px', padding: '10px', cursor: 'pointer' }}>
-        Добавить возрастную группу
-      </button>
+      <div className="page-header">
+        <h1>🎂 Возрастные группы</h1>
+        <button className="btn btn-primary" onClick={handleCreate}>
+          + Добавить возрастную группу
+        </button>
+      </div>
 
       {isEditing && (
-        <div className="form-container" style={{ marginBottom: '20px', padding: '20px', border: '1px solid #ccc' }}>
-          <h2>{currentAgeGroup.id ? 'Редактировать' : 'Создать'} возрастную группу</h2>
+        <div className="card">
+          <h2>{currentAgeGroup.id ? 'Редактировать' : 'Добавить'} возрастную группу</h2>
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Название: </label>
-              <input
-                type="text"
-                name="name"
-                value={currentAgeGroup.name}
-                onChange={handleChange}
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Название</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="name"
+                  value={currentAgeGroup.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Например: Младшая группа"
+                />
+              </div>
+              <div className="form-group">
+                <label>Возрастная категория (1-7)</label>
+                <input
+                  className="form-control"
+                  type="number"
+                  name="ageGroup"
+                  value={currentAgeGroup.ageGroup}
+                  onChange={handleChange}
+                  required
+                  min="1"
+                  max="7"
+                />
+              </div>
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Мин. возраст: </label>
+            <div className="form-group">
+              <label>Цена</label>
               <input
+                className="form-control"
                 type="number"
-                name="minAge"
-                value={currentAgeGroup.minAge}
+                name="price"
+                value={currentAgeGroup.price}
                 onChange={handleChange}
                 required
+                placeholder="Введите цену"
               />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Макс. возраст: </label>
-              <input
-                type="number"
-                name="maxAge"
-                value={currentAgeGroup.maxAge}
-                onChange={handleChange}
-                required
-              />
+            <div className="table-actions">
+              <button type="submit" className="btn btn-success">Сохранить</button>
+              <button type="button" className="btn btn-secondary" onClick={() => setIsEditing(false)}>
+                Отмена
+              </button>
             </div>
-            <button type="submit">Сохранить</button>
-            <button type="button" onClick={() => setIsEditing(false)} style={{ marginLeft: '10px' }}>
-              Отмена
-            </button>
           </form>
         </div>
       )}
 
-      <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Название</th>
-            <th>Мин. возраст</th>
-            <th>Макс. возраст</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ageGroups.map((group) => (
-            <tr key={group.id}>
-              <td>{group.id}</td>
-              <td>{group.name}</td>
-              <td>{group.minAge}</td>
-              <td>{group.maxAge}</td>
-              <td>
-                <button onClick={() => handleEdit(group)}>Редактировать</button>
-                <button onClick={() => handleDelete(group.id)} style={{ marginLeft: '10px', color: 'red' }}>
-                  Удалить
-                </button>
-              </td>
+      <div className="table-container">
+        <table className="styled-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Название</th>
+              <th>Возрастная категория</th>
+              <th>Цена</th>
+              <th>Действия</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {ageGroups.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="empty-state">
+                  <h3>Список пуст</h3>
+                  <p>Добавьте первую возрастную группу</p>
+                </td>
+              </tr>
+            ) : (
+              ageGroups.map((group) => (
+                <tr key={group.id}>
+                  <td><span className="badge badge-primary">#{group.id}</span></td>
+                  <td>{group.name}</td>
+                  <td><span className="badge badge-info">{group.ageGroup}</span></td>
+                  <td><strong>{group.price} сом</strong></td>
+                  <td>
+                    <div className="table-actions">
+                      <button className="btn btn-secondary btn-sm" onClick={() => handleEdit(group)}>
+                        Ред.
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(group.id)}>
+                        Удалить
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

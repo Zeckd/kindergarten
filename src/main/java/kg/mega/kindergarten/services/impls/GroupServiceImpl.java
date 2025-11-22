@@ -60,20 +60,18 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDto update(Long id, GroupSaveDto groupSaveDto, Delete delete) {
-        Group groupId = groupRepo.findById(id).orElseThrow(() ->
+        Group group = groupRepo.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
         AgeGroup ageGroup = ageGroupRepo.findByIdAgeGroup(groupSaveDto.ageGroupId());
         if (ageGroup == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-
-        Group group = GroupMapper.INSTANCE.groupSaveDtoToGroup(groupSaveDto);
-        group.setId(id);
-        group.setDelete(delete);
         group.setName(groupSaveDto.name());
         group.setAgeGroup(ageGroup);
+        group.setDelete(delete);
 
+        group = groupRepo.save(group);
 
         return GroupMapper.INSTANCE.groupToGroupDto(group);
     }
@@ -144,6 +142,43 @@ public class GroupServiceImpl implements GroupService {
             group.addChild(child);
 
             }
+        group = groupRepo.save(group);
+        return GroupMapper.INSTANCE.groupToGroupDto(group);
+    }
+
+    @Override
+    public GroupDto removeTeacher(Long groupId) {
+        Group group = groupRepo.findByIdGroup(groupId);
+        if (group == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found");
+        }
+        group.setTeacher(null);
+        group = groupRepo.save(group);
+        return GroupMapper.INSTANCE.groupToGroupDto(group);
+    }
+
+    @Override
+    public GroupDto removeAssistant(Long groupId) {
+        Group group = groupRepo.findByIdGroup(groupId);
+        if (group == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found");
+        }
+        group.setAssistant(null);
+        group = groupRepo.save(group);
+        return GroupMapper.INSTANCE.groupToGroupDto(group);
+    }
+
+    @Override
+    public GroupDto removeChildFromGroup(Long groupId, Long childId) {
+        Group group = groupRepo.findByIdGroup(groupId);
+        if (group == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found");
+        }
+        Child child = childRepo.findByIdChild(childId);
+        if (child == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Child not found");
+        }
+        group.removeChild(child);
         group = groupRepo.save(group);
         return GroupMapper.INSTANCE.groupToGroupDto(group);
     }

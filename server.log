@@ -1,0 +1,69 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< kg.mega:kindergarten >------------------------
+[INFO] Building kindergarten 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.0:run (default-cli) > test-compile @ kindergarten >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ kindergarten ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ kindergarten ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ kindergarten ---
+[INFO] skip non existing resourceDirectory /Users/chyngyz/Desktop/kindergarden/kindergarden/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ kindergarten ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] <<< spring-boot:3.3.0:run (default-cli) < test-compile @ kindergarten <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.3.0:run (default-cli) @ kindergarten ---
+[INFO] Attaching agents: []
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2025-11-22T08:49:43.415+06:00  INFO 56500 --- [kindergarten] [           main] k.m.k.KindergartenApplication            : Starting KindergartenApplication using Java 21.0.4 with PID 56500 (/Users/chyngyz/Desktop/kindergarden/kindergarden/target/classes started by chyngyz in /Users/chyngyz/Desktop/kindergarden/kindergarden)
+2025-11-22T08:49:43.415+06:00  INFO 56500 --- [kindergarten] [           main] k.m.k.KindergartenApplication            : No active profile set, falling back to 1 default profile: "default"
+2025-11-22T08:49:43.749+06:00  INFO 56500 --- [kindergarten] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-22T08:49:43.780+06:00  INFO 56500 --- [kindergarten] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 28 ms. Found 10 JPA repository interfaces.
+2025-11-22T08:49:44.016+06:00  INFO 56500 --- [kindergarten] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2025-11-22T08:49:44.021+06:00  INFO 56500 --- [kindergarten] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-22T08:49:44.021+06:00  INFO 56500 --- [kindergarten] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-11-22T08:49:44.041+06:00  INFO 56500 --- [kindergarten] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-11-22T08:49:44.042+06:00  INFO 56500 --- [kindergarten] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 611 ms
+2025-11-22T08:49:44.057+06:00  INFO 56500 --- [kindergarten] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-22T08:49:44.143+06:00  INFO 56500 --- [kindergarten] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:kindergarten_db user=SA
+2025-11-22T08:49:44.144+06:00  INFO 56500 --- [kindergarten] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-22T08:49:44.150+06:00  INFO 56500 --- [kindergarten] [           main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:kindergarten_db'
+2025-11-22T08:49:44.211+06:00  INFO 56500 --- [kindergarten] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-22T08:49:44.235+06:00  INFO 56500 --- [kindergarten] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-11-22T08:49:44.248+06:00  INFO 56500 --- [kindergarten] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-11-22T08:49:44.358+06:00  INFO 56500 --- [kindergarten] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-22T08:49:44.376+06:00  WARN 56500 --- [kindergarten] [           main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-11-22T08:49:44.783+06:00  INFO 56500 --- [kindergarten] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-22T08:49:44.823+06:00  INFO 56500 --- [kindergarten] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-22T08:49:44.955+06:00  INFO 56500 --- [kindergarten] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-22T08:49:45.392+06:00  WARN 56500 --- [kindergarten] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-22T08:49:45.417+06:00  INFO 56500 --- [kindergarten] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name appUserDetailsService
+2025-11-22T08:49:45.593+06:00  INFO 56500 --- [kindergarten] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@3dc455f6, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5441309e, org.springframework.security.web.context.SecurityContextHolderFilter@627a06e6, org.springframework.security.web.header.HeaderWriterFilter@3829e6ca, org.springframework.web.filter.CorsFilter@b8812fb, org.springframework.security.web.authentication.logout.LogoutFilter@619d0977, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@3e9afede, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@44f4c619, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@68a4129d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@102e9731, org.springframework.security.web.access.ExceptionTranslationFilter@72da5f0e, org.springframework.security.web.access.intercept.AuthorizationFilter@4bb13671]
+2025-11-22T08:49:45.754+06:00  INFO 56500 --- [kindergarten] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path '/'
+2025-11-22T08:49:45.758+06:00  INFO 56500 --- [kindergarten] [           main] k.m.k.KindergartenApplication            : Started KindergartenApplication in 2.475 seconds (process running for 2.604)
+ Администратор создан: username=admin, password=admin123
+2025-11-22T08:49:46.754+06:00  INFO 56500 --- [kindergarten] [nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-22T08:49:46.754+06:00  INFO 56500 --- [kindergarten] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-22T08:49:46.755+06:00  INFO 56500 --- [kindergarten] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-11-22T08:49:46.784+06:00  INFO 56500 --- [kindergarten] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-22T08:49:46.785+06:00  INFO 56500 --- [kindergarten] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-11-22T08:49:46.786+06:00  INFO 56500 --- [kindergarten] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

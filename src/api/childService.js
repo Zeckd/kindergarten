@@ -6,6 +6,8 @@ const childService = {
   create: (childData) => axiosClient.post('/child/create', childData),
   update: (id, childData, deleteStatus = 'ACTIVE') => axiosClient.put('/child/update', childData, { params: { id, delete: deleteStatus } }),
   delete: (id) => axiosClient.delete('/child/delete', { params: { id } }),
+  getByGroup: (groupId) => axiosClient.get('/child/by-group', { params: { groupId } }),
+  getByParent: (parentId) => axiosClient.get('/child/by-parent', { params: { parentId } }),
 };
 
 export default childService;

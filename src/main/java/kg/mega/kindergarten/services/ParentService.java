@@ -21,4 +21,6 @@ public interface ParentService {
     List<Parent> findAll(List<Long> parents);
 
     ParentDto update(Long id, ParentSaveDto parentSaveDto,Role role, Delete delete);
+
+    List<Object> findChildrenByParentId(Long parentId);
 }

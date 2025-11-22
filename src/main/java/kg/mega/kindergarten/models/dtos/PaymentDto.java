@@ -14,17 +14,13 @@ import java.time.LocalDateTime;
 
 public record PaymentDto (
         Long id,
-         @JsonIgnore
          Child child,
-         @JsonIgnore
          double paymentSum,
 
         @Schema(description = "Дата и время начала периода", example = "2025-06-21 16:19:04")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
          LocalDateTime paymentDate,
-         @JsonIgnore
          String period,
-         @JsonIgnore
          PaymentType paymentType
 ){
 }

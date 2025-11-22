@@ -20,4 +20,7 @@ public interface PaymentRepo extends JpaRepository<Payment, Long> {
     Payment findTopByChildIdOrderByPaymentDateDesc(Long childId);
     @Query("SELECT coalesce(sum(p.paymentSum), 0) FROM Payment p WHERE p.child.id = ?1 AND month (p.paymentDate) = ?2 AND year(p.paymentDate) = ?3")
     Double sumPaymentsByChildIdAndMonth(Long childId, int month, int year);
+
+    @Query("select p from Payment p where p.delete = 0 and p.child.id = :childId")
+    List<Payment> findAllByChildId(Long childId);
 }

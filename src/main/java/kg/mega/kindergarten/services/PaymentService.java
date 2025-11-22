@@ -24,4 +24,6 @@ public interface PaymentService {
 
     Payment findByChildId(Long id);
 
+    List<Payment> findAllByChildId(Long childId);
+
 }

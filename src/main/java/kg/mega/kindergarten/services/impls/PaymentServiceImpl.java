@@ -50,13 +50,32 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentDto update(Long id, PaymentSaveDto paymentSaveDto,PaymentType paymentType, Delete delete) {
-        Payment paymentId = paymentRepo.findById(id).orElseThrow(() ->
+        Payment payment = paymentRepo.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
-        Payment payment = PaymentMapper.INSTANCE.paymentSaveDtoToPayment(paymentSaveDto);
-        payment.setId(id);
-        payment.setPaymentDate(LocalDateTime.now());
+        
+        // Preserve child
+        Child child = payment.getChild();
+        if (paymentSaveDto.childId() != null) {
+             Child newChild = childService.findById(paymentSaveDto.childId());
+             if (newChild != null) {
+                 child = newChild;
+             }
+        }
+        
+        payment.setChild(child);
+        payment.setPaymentSum(paymentSaveDto.paymentSum());
+        payment.setPeriod(paymentSaveDto.period());
+        // paymentDate is usually not updated, but if we want to update it to now:
+        // payment.setPaymentDate(LocalDateTime.now()); 
+        // Or keep existing:
+        // payment.setPaymentDate(payment.getPaymentDate());
+        // The original code set it to now(), let's keep it for now or maybe it was a bug?
+        // Usually payment date is when payment happened. Updating record shouldn't change date unless specified.
+        // But DTO doesn't have date. Let's keep existing date.
+        
         payment.setPaymentType(paymentType);
         payment.setDelete(delete);
+        
         payment = paymentRepo.save(payment);
 
 
@@ -98,5 +117,10 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public double sumPaymentsByChildIdAndMonth(Long child, int month, int year) {
         return paymentRepo.sumPaymentsByChildIdAndMonth(child, month, year);
+    }
+
+    @Override
+    public List<Payment> findAllByChildId(Long childId) {
+        return paymentRepo.findAllByChildId(childId);
     }
 }

@@ -20,35 +20,40 @@ public class GroupController implements CRUDController<GroupDto, GroupSaveDto, G
         this.groupService = groupService;
     }
 
+    @Override
+    @PostMapping("/create")
     @Operation(summary = "Создать новую группу")
-    public GroupDto create(GroupSaveDto groupCreateDto) {
+    public GroupDto create(@RequestBody GroupSaveDto groupCreateDto) {
         return groupService.create(groupCreateDto);
     }
 
     @Override
+    @PutMapping("/update")
     @Operation(summary = "Обновить данные группы")
-
-    public GroupDto update(Long id, GroupSaveDto groupSaveDto, Delete delete) {
+    public GroupDto update(@RequestParam Long id, @RequestBody GroupSaveDto groupSaveDto, @RequestParam Delete delete) {
         return groupService.update(id,groupSaveDto, delete);
 
     }
 
 
     @Override
+    @DeleteMapping("/delete")
     @Operation(summary = "Удалить группу по ID")
-    public GroupDto delete(Long id) {
+    public GroupDto delete(@RequestParam Long id) {
         return groupService.delete(id);
     }
 
     @Override
+    @GetMapping("/get-list")
     @Operation(summary = "Получить список всех групп")
-    public List<Group> allList(int page, int size) {
+    public List<Group> allList(@RequestParam int page, @RequestParam int size) {
         return groupService.findAllList(page, size);
     }
 
     @Override
+    @GetMapping("/find-by-id")
     @Operation(summary = "Найти группу по ID")
-    public Group findById(Long id) {
+    public Group findById(@RequestParam Long id) {
         return groupService.findById(id);
     }
 
@@ -59,5 +64,25 @@ public class GroupController implements CRUDController<GroupDto, GroupSaveDto, G
             @RequestParam(required = false) Long teacherOrAssistantId,
             @RequestParam(required = false) Long childId) {
         return groupService.addTeacherOrAssistantAndChild(id, teacherOrAssistantId, childId);
+    }
+
+    @Operation(summary = "Удалить учителя из группы")
+    @PutMapping("/remove-teacher")
+    public GroupDto removeTeacher(@RequestParam Long id) {
+        return groupService.removeTeacher(id);
+    }
+
+    @Operation(summary = "Удалить ассистента из группы")
+    @PutMapping("/remove-assistant")
+    public GroupDto removeAssistant(@RequestParam Long id) {
+        return groupService.removeAssistant(id);
+    }
+
+    @Operation(summary = "Удалить ребенка из группы")
+    @PutMapping("/remove-child")
+    public GroupDto removeChild(
+            @RequestParam Long groupId,
+            @RequestParam Long childId) {
+        return groupService.removeChildFromGroup(groupId, childId);
     }
 }

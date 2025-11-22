@@ -1,0 +1,11 @@
+Note: Unnecessary use of -X or --request, POST is already inferred.
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying [::1]:8081...
+* connect to ::1 port 8081 failed: Connection refused
+*   Trying 127.0.0.1:8081...
+* connect to 127.0.0.1 port 8081 failed: Connection refused
+* Failed to connect to localhost port 8081 after 0 ms: Couldn't connect to server
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* Closing connection
+curl: (7) Failed to connect to localhost port 8081 after 0 ms: Couldn't connect to server

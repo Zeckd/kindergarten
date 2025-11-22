@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import parentService from '../api/parentService';
+import childService from '../api/childService';
 
 const Parents = () => {
   const [parents, setParents] = useState([]);
+  const [childrenList, setChildrenList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -14,21 +16,26 @@ const Parents = () => {
       phoneNumber: '',
       secondaryPhoneNumber: '',
       email: ''
-    }
+    },
+    childrenId: []
   });
   const [role, setRole] = useState('FATHER');
 
   useEffect(() => {
-    fetchParents();
+    fetchData();
   }, []);
 
-  const fetchParents = async () => {
+  const fetchData = async () => {
     try {
-      const response = await parentService.getAll(0, 100);
-      setParents(response.data);
+      const [parentsRes, childrenRes] = await Promise.all([
+        parentService.getAll(0, 100),
+        childService.getAll(0, 100)
+      ]);
+      setParents(parentsRes.data);
+      setChildrenList(childrenRes.data);
       setLoading(false);
     } catch (err) {
-      setError('Ошибка при загрузке родителей');
+      setError('Ошибка при загрузке данных');
       setLoading(false);
     }
   };
@@ -37,7 +44,7 @@ const Parents = () => {
     if (window.confirm('Вы уверены, что хотите удалить этого родителя?')) {
       try {
         await parentService.delete(id);
-        fetchParents();
+        fetchData();
       } catch (err) {
         alert('Ошибка при удалении');
       }
@@ -54,7 +61,8 @@ const Parents = () => {
         phoneNumber: parent.contact?.phoneNumber || '',
         secondaryPhoneNumber: parent.contact?.secondaryPhoneNumber || '',
         email: parent.contact?.email || ''
-      }
+      },
+      childrenId: parent.children ? parent.children.map(c => c.id) : []
     });
     setRole(parent.role);
     setIsEditing(true);
@@ -69,7 +77,8 @@ const Parents = () => {
         phoneNumber: '',
         secondaryPhoneNumber: '',
         email: ''
-      }
+      },
+      childrenId: []
     });
     setRole('FATHER');
     setIsEditing(true);
@@ -81,7 +90,8 @@ const Parents = () => {
       firstName: currentParent.firstName,
       lastName: currentParent.lastName,
       patronymic: currentParent.patronymic,
-      contactCreate: currentParent.contactCreate
+      contactCreate: currentParent.contactCreate,
+      childrenId: currentParent.childrenId
     };
 
     try {
@@ -91,7 +101,7 @@ const Parents = () => {
         await parentService.create(payload, role);
       }
       setIsEditing(false);
-      fetchParents();
+      fetchData();
     } catch (err) {
       alert('Ошибка при сохранении: ' + (err.response?.data?.message || err.message));
     }
@@ -113,130 +123,201 @@ const Parents = () => {
     }
   };
 
-  if (loading) return <div>Загрузка...</div>;
-  if (error) return <div>{error}</div>;
+  const handleChildChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, option => Number(option.value));
+    setCurrentParent({ ...currentParent, childrenId: selectedOptions });
+  };
+
+  if (loading) return <div className="loading">Загрузка...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div>
-      <h1>Родители</h1>
-      <button onClick={handleCreate} style={{ marginBottom: '20px', padding: '10px', cursor: 'pointer' }}>
-        Добавить родителя
-      </button>
+      <div className="page-header">
+        <h1>👨‍👩‍👧 Родители</h1>
+        <button className="btn btn-primary" onClick={handleCreate}>
+          + Добавить родителя
+        </button>
+      </div>
 
       {isEditing && (
-        <div className="form-container" style={{ marginBottom: '20px', padding: '20px', border: '1px solid #ccc' }}>
-          <h2>{currentParent.id ? 'Редактировать' : 'Создать'} родителя</h2>
+        <div className="card">
+          <h2>{currentParent.id ? 'Редактировать' : 'Добавить'} родителя</h2>
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Имя: </label>
-              <input
-                type="text"
-                name="firstName"
-                value={currentParent.firstName}
-                onChange={handleChange}
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Имя</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="firstName"
+                  value={currentParent.firstName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Введите имя"
+                />
+              </div>
+              <div className="form-group">
+                <label>Фамилия</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="lastName"
+                  value={currentParent.lastName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Введите фамилию"
+                />
+              </div>
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Фамилия: </label>
-              <input
-                type="text"
-                name="lastName"
-                value={currentParent.lastName}
-                onChange={handleChange}
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Отчество</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="patronymic"
+                  value={currentParent.patronymic}
+                  onChange={handleChange}
+                  placeholder="Введите отчество"
+                />
+              </div>
+              <div className="form-group">
+                <label>Роль</label>
+                <select
+                  className="form-control"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
+                  <option value="FATHER">Отец</option>
+                  <option value="MOTHER">Мать</option>
+                  <option value="BROTHER">Брат</option>
+                  <option value="SISTER">Сестра</option>
+                </select>
+              </div>
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Отчество: </label>
-              <input
-                type="text"
-                name="patronymic"
-                value={currentParent.patronymic}
-                onChange={handleChange}
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Телефон</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="contactCreate.phoneNumber"
+                  value={currentParent.contactCreate.phoneNumber}
+                  onChange={handleChange}
+                  required
+                  placeholder="+996700123456"
+                />
+              </div>
+              <div className="form-group">
+                <label>Доп. телефон</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  name="contactCreate.secondaryPhoneNumber"
+                  value={currentParent.contactCreate.secondaryPhoneNumber}
+                  onChange={handleChange}
+                  placeholder="+996555123456"
+                />
+              </div>
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Телефон (+996...): </label>
+            <div className="form-group">
+              <label>Email</label>
               <input
-                type="text"
-                name="contactCreate.phoneNumber"
-                value={currentParent.contactCreate.phoneNumber}
-                onChange={handleChange}
-                required
-                placeholder="+996700123456"
-              />
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Доп. телефон: </label>
-              <input
-                type="text"
-                name="contactCreate.secondaryPhoneNumber"
-                value={currentParent.contactCreate.secondaryPhoneNumber}
-                onChange={handleChange}
-                placeholder="+996555123456"
-              />
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Email: </label>
-              <input
+                className="form-control"
                 type="email"
                 name="contactCreate.email"
                 value={currentParent.contactCreate.email}
                 onChange={handleChange}
                 required
+                placeholder="example@mail.com"
               />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Роль: </label>
+            <div className="form-group">
+              <label>Дети (Ctrl+Click для выбора нескольких)</label>
               <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                required
+                className="form-control"
+                multiple
+                value={currentParent.childrenId}
+                onChange={handleChildChange}
+                style={{ height: '100px' }}
               >
-                <option value="FATHER">Отец</option>
-                <option value="MOTHER">Мать</option>
-                <option value="BROTHER">Брат</option>
-                <option value="SISTER">Сестра</option>
+                {childrenList.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.firstName} {c.lastName}
+                  </option>
+                ))}
               </select>
             </div>
-            <button type="submit">Сохранить</button>
-            <button type="button" onClick={() => setIsEditing(false)} style={{ marginLeft: '10px' }}>
-              Отмена
-            </button>
+            <div className="table-actions">
+              <button type="submit" className="btn btn-success">Сохранить</button>
+              <button type="button" className="btn btn-secondary" onClick={() => setIsEditing(false)}>
+                Отмена
+              </button>
+            </div>
           </form>
         </div>
       )}
 
-      <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Имя</th>
-            <th>Фамилия</th>
-            <th>Роль</th>
-            <th>Телефон</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-          {parents.map((parent) => (
-            <tr key={parent.id}>
-              <td>{parent.id}</td>
-              <td>{parent.firstName}</td>
-              <td>{parent.lastName}</td>
-              <td>{parent.role}</td>
-              <td>{parent.contact?.phoneNumber}</td>
-              <td>
-                <button onClick={() => handleEdit(parent)}>Редактировать</button>
-                <button onClick={() => handleDelete(parent.id)} style={{ marginLeft: '10px', color: 'red' }}>
-                  Удалить
-                </button>
-              </td>
+      <div className="table-container">
+        <table className="styled-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Имя</th>
+              <th>Фамилия</th>
+              <th>Отчество</th>
+              <th>Роль</th>
+              <th>Телефон</th>
+              <th>Email</th>
+              <th>Действия</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {parents.length === 0 ? (
+              <tr>
+                <td colSpan="8" className="empty-state">
+                  <h3>Список пуст</h3>
+                  <p>Добавьте первого родителя</p>
+                </td>
+              </tr>
+            ) : (
+              parents.map((parent) => (
+                <tr key={parent.id}>
+                  <td><span className="badge badge-primary">#{parent.id}</span></td>
+                  <td>{parent.firstName}</td>
+                  <td>{parent.lastName}</td>
+                  <td>{parent.patronymic || '—'}</td>
+                  <td><span className="badge badge-info">{parent.role}</span></td>
+                  <td>{parent.contact?.phoneNumber || '—'}</td>
+                  <td>{parent.contact?.email || '—'}</td>
+                  <td>
+                    <div className="table-actions">
+                      <button className="btn btn-secondary btn-sm" onClick={() => handleEdit(parent)}>
+                        Ред.
+                      </button>
+                      <button className="btn btn-info btn-sm" onClick={async () => {
+                        try {
+                          const res = await parentService.getChildren(parent.id);
+                          alert('Дети: ' + JSON.stringify(res.data, null, 2));
+                        } catch (e) {
+                          alert('Ошибка при получении детей');
+                        }
+                      }}>
+                        Дети
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(parent.id)}>
+                        Удалить
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

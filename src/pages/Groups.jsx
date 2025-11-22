@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import groupService from '../api/groupService';
+import ageGroupService from '../api/ageGroupService';
 
 const Groups = () => {
   const [groups, setGroups] = useState([]);
+  const [ageGroups, setAgeGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentGroup, setCurrentGroup] = useState({ name: '' });
+  const [currentGroup, setCurrentGroup] = useState({ name: '', ageGroupId: '' });
 
   useEffect(() => {
     fetchGroups();
+    fetchAgeGroups();
   }, []);
 
   const fetchGroups = async () => {
@@ -20,6 +23,15 @@ const Groups = () => {
     } catch (err) {
       setError('Ошибка при загрузке групп');
       setLoading(false);
+    }
+  };
+
+  const fetchAgeGroups = async () => {
+    try {
+      const response = await ageGroupService.getAll();
+      setAgeGroups(response.data);
+    } catch (err) {
+      console.error('Ошибка при загрузке возрастных групп', err);
     }
   };
 
@@ -35,22 +47,27 @@ const Groups = () => {
   };
 
   const handleEdit = (group) => {
-    setCurrentGroup(group);
+    setCurrentGroup({ ...group, ageGroupId: group.ageGroup ? group.ageGroup.id : '' });
     setIsEditing(true);
   };
 
   const handleCreate = () => {
-    setCurrentGroup({ name: '' });
+    setCurrentGroup({ name: '', ageGroupId: '' });
     setIsEditing(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      name: currentGroup.name,
+      ageGroupId: currentGroup.ageGroupId
+    };
+
     try {
       if (currentGroup.id) {
-        await groupService.update(currentGroup);
+        await groupService.update({ ...payload, id: currentGroup.id });
       } else {
-        await groupService.create(currentGroup);
+        await groupService.create(payload);
       }
       setIsEditing(false);
       fetchGroups();
@@ -64,61 +81,191 @@ const Groups = () => {
     setCurrentGroup({ ...currentGroup, [name]: value });
   };
 
-  if (loading) return <div>Загрузка...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="loading">Загрузка...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div>
-      <h1>Группы</h1>
-      <button onClick={handleCreate} style={{ marginBottom: '20px', padding: '10px', cursor: 'pointer' }}>
-        Добавить группу
-      </button>
+      <div className="page-header">
+        <h1>👥 Группы</h1>
+        <button className="btn btn-primary" onClick={handleCreate}>
+          + Добавить группу
+        </button>
+      </div>
 
       {isEditing && (
-        <div className="form-container" style={{ marginBottom: '20px', padding: '20px', border: '1px solid #ccc' }}>
-          <h2>{currentGroup.id ? 'Редактировать' : 'Создать'} группу</h2>
+        <div className="card">
+          <h2>{currentGroup.id ? 'Редактировать' : 'Добавить'} группу</h2>
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '10px' }}>
-              <label>Название: </label>
+            <div className="form-group">
+              <label>Название</label>
               <input
+                className="form-control"
                 type="text"
                 name="name"
                 value={currentGroup.name}
                 onChange={handleChange}
                 required
+                placeholder="Введите название группы"
               />
             </div>
-            <button type="submit">Сохранить</button>
-            <button type="button" onClick={() => setIsEditing(false)} style={{ marginLeft: '10px' }}>
-              Отмена
-            </button>
+            <div className="form-group">
+              <label>Возрастная группа</label>
+              <select
+                className="form-control"
+                name="ageGroupId"
+                value={currentGroup.ageGroupId}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Выберите возрастную группу</option>
+                {ageGroups.map((ag) => (
+                  <option key={ag.id} value={ag.id}>
+                    {ag.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="table-actions">
+              <button type="submit" className="btn btn-success">Сохранить</button>
+              <button type="button" className="btn btn-secondary" onClick={() => setIsEditing(false)}>
+                Отмена
+              </button>
+            </div>
           </form>
         </div>
       )}
 
-      <table border="1" cellPadding="10" style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Название</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-          {groups.map((group) => (
-            <tr key={group.id}>
-              <td>{group.id}</td>
-              <td>{group.name}</td>
-              <td>
-                <button onClick={() => handleEdit(group)}>Редактировать</button>
-                <button onClick={() => handleDelete(group.id)} style={{ marginLeft: '10px', color: 'red' }}>
-                  Удалить
-                </button>
-              </td>
+      <div className="table-container">
+        <table className="styled-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Название</th>
+              <th>Возрастная группа</th>
+              <th>Персонал</th>
+              <th>Дети</th>
+              <th>Действия</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {groups.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="empty-state">
+                  <h3>Список пуст</h3>
+                  <p>Добавьте первую группу</p>
+                </td>
+              </tr>
+            ) : (
+              groups.map((group) => (
+                <tr key={group.id}>
+                  <td><span className="badge badge-primary">#{group.id}</span></td>
+                  <td>{group.name}</td>
+                  <td><span className="badge badge-info">{group.ageGroup?.name || '—'}</span></td>
+                  <td>
+                    {group.teacher && (
+                      <div style={{ marginBottom: '5px' }}>
+                        <strong>Учитель:</strong><br/>
+                        {group.teacher.firstName} {group.teacher.lastName}
+                      </div>
+                    )}
+                    {group.assistant && (
+                      <div>
+                        <strong>Ассистент:</strong><br/>
+                        {group.assistant.firstName} {group.assistant.lastName}
+                      </div>
+                    )}
+                    {!group.teacher && !group.assistant && <span className="text-muted">—</span>}
+                  </td>
+                  <td>
+                    {group.children && group.children.length > 0 ? (
+                      <details>
+                        <summary>Показать ({group.children.length})</summary>
+                        <ul style={{ paddingLeft: '20px', margin: '5px 0' }}>
+                          {group.children.map(child => (
+                            <li key={child.id}>
+                              {child.firstName} {child.lastName}
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    ) : (
+                      <span className="text-muted">Нет детей</span>
+                    )}
+                  </td>
+                  <td>
+                    <div className="table-actions">
+                      <button className="btn btn-secondary btn-sm" onClick={() => handleEdit(group)}>
+                        Ред.
+                      </button>
+                      <button className="btn btn-success btn-sm" onClick={() => {
+                        const teacherId = prompt('Введите числовой ID Учителя/Ассистента');
+                        if(teacherId && !isNaN(teacherId)) {
+                          groupService.addMember({ id: group.id, teacherOrAssistantId: teacherId })
+                            .then(() => {
+                              alert('Добавлено');
+                              fetchGroups();
+                            })
+                            .catch((e) => alert('Ошибка: ' + (e.response?.data?.message || e.message)));
+                        } else if (teacherId) {
+                          alert('ID должен быть числом');
+                        }
+                      }}>
+                        + Учитель
+                      </button>
+                      <button className="btn btn-success btn-sm" onClick={() => {
+                        const childId = prompt('Введите числовой ID Ребенка');
+                        if(childId && !isNaN(childId)) {
+                          groupService.addMember({ id: group.id, childId: childId })
+                            .then(() => {
+                              alert('Добавлено');
+                              fetchGroups();
+                            })
+                            .catch((e) => alert('Ошибка: ' + (e.response?.data?.message || e.message)));
+                        } else if (childId) {
+                          alert('ID должен быть числом');
+                        }
+                      }}>
+                        + Ребенок
+                      </button>
+                      <button className="btn btn-warning btn-sm" onClick={() => {
+                        if(confirm('Удалить учителя?')) {
+                          groupService.removeTeacher(group.id)
+                            .then(() => {
+                              alert('Удалено');
+                              fetchGroups();
+                            })
+                            .catch(() => alert('Ошибка'));
+                        }
+                      }}>
+                        − Учитель
+                      </button>
+                      <button className="btn btn-warning btn-sm" onClick={() => {
+                        const childId = prompt('Введите числовой ID Ребенка для удаления');
+                        if(childId && !isNaN(childId) && confirm('Удалить ребенка?')) {
+                          groupService.removeChild(group.id, childId)
+                            .then(() => {
+                              alert('Удалено');
+                              fetchGroups();
+                            })
+                            .catch((e) => alert('Ошибка: ' + (e.response?.data?.message || e.message)));
+                        } else if (childId) {
+                          alert('ID должен быть числом');
+                        }
+                      }}>
+                        − Ребенок
+                      </button>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(group.id)}>
+                        Удалить
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

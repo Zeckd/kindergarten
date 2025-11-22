@@ -21,4 +21,10 @@ public interface GroupService {
 
     GroupDto addTeacherOrAssistantAndChild(Long groupId, Long teacherOrAssistantId, Long childId);
 
+    GroupDto removeTeacher(Long groupId);
+
+    GroupDto removeAssistant(Long groupId);
+
+    GroupDto removeChildFromGroup(Long groupId, Long childId);
+
 }

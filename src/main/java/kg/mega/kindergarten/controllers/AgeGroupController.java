@@ -8,7 +8,7 @@ import kg.mega.kindergarten.models.dtos.AgeGroupSaveDto;
 import kg.mega.kindergarten.models.dtos.AgeGroupDto;
 import kg.mega.kindergarten.services.AgeGroupService;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,33 +22,38 @@ public class AgeGroupController implements CRUDController<AgeGroupDto, AgeGroupS
     }
 
     @Override
+    @PostMapping("/create")
     @Operation(summary = "Создать новую возрастную группу")
-    public AgeGroupDto create(AgeGroupSaveDto ageGroupCreateDto) {
+    public AgeGroupDto create(@RequestBody AgeGroupSaveDto ageGroupCreateDto) {
         return ageGroupService.create(ageGroupCreateDto);
     }
 
     @Override
+    @PutMapping("/update")
     @Operation(summary = "Обновить существующую возрастную группу")
-    public AgeGroupDto update(Long id, AgeGroupSaveDto ageGroupSaveDto, Delete delete) {
+    public AgeGroupDto update(@RequestParam Long id, @RequestBody AgeGroupSaveDto ageGroupSaveDto, @RequestParam Delete delete) {
         return ageGroupService.update(id, ageGroupSaveDto, delete);
 
     }
 
     @Override
+    @DeleteMapping("/delete")
     @Operation(summary = "Удалить возрастную группу по ID")
-    public AgeGroupDto delete(Long id) {
+    public AgeGroupDto delete(@RequestParam Long id) {
         return ageGroupService.delete(id);
     }
 
     @Override
+    @GetMapping("/get-list")
     @Operation(summary = "Получить список всех возрастных групп")
-    public List<AgeGroup> allList(int page, int size) {
+    public List<AgeGroup> allList(@RequestParam int page, @RequestParam int size) {
         return ageGroupService.allList(page, size);
     }
 
     @Override
+    @GetMapping("/find-by-id")
     @Operation(summary = "Найти возрастную группу по ID")
-    public AgeGroup findById(Long id) {
+    public AgeGroup findById(@RequestParam Long id) {
         return ageGroupService.findById(id);
     }
 }

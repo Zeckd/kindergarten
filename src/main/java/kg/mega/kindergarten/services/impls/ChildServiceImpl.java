@@ -36,25 +36,26 @@ public class ChildServiceImpl implements ChildService {
 
     @Override
     public ChildDto create(ChildSaveDto childCreateDto) {
-        List<Parent> parents = parentService.findAll(childCreateDto.parentsId());
-        if (parents == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        List<Parent> parents = null;
+        if (childCreateDto.parentsId() != null && !childCreateDto.parentsId().isEmpty()) {
+            parents = parentService.findAll(childCreateDto.parentsId());
+            if (parents == null || parents.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Parents not found");
+            }
         }
-        Group groupId = groupService.findById(childCreateDto.group()) ;
+
+        Group groupId = null;
+        if (childCreateDto.group() != null) {
+            groupId = groupService.findById(childCreateDto.group());
+        }
 
         Child child = ChildMapper.INSTANCE.childSaveDtoToChild(childCreateDto ,parents);
         if(groupId != null) {
-
             groupId.addChild(child);
         }
         child.setGroup(groupId);
 
-
-
         child = childRepo.save(child);
-
-
-
 
         return ChildMapper.INSTANCE.childToChildDto(child);
     }
@@ -94,15 +95,42 @@ public class ChildServiceImpl implements ChildService {
     public ChildDto update(Long id, ChildSaveDto childSaveDto, Delete delete) {
         Child childId = childRepo.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found"));
-        List<Parent> parents = parentService.findAll(childSaveDto.parentsId());
+        
+        List<Parent> parents = null;
+        if (childSaveDto.parentsId() != null && !childSaveDto.parentsId().isEmpty()) {
+            parents = parentService.findAll(childSaveDto.parentsId());
+        }
+        
         Child child = ChildMapper.INSTANCE.childSaveDtoToChild(childSaveDto, parents);
         child.setId(id);
         child.setDelete(delete);
+        
+        // Preserve existing group if not provided in update (optional, depending on logic)
+        // For now, we assume the mapper handles it or we overwrite. 
+        // If group is in DTO, we should fetch it.
+        if (childSaveDto.group() != null) {
+             Group group = groupService.findById(childSaveDto.group());
+             child.setGroup(group);
+        } else {
+             // If we want to keep the old group:
+             child.setGroup(childId.getGroup());
+        }
+
         child = childRepo.save(child);
 
 
         return ChildMapper.INSTANCE.childToChildDto(child);
     }
 
+
+    @Override
+    public List<Child> findByGroupId(Long groupId) {
+        return childRepo.findByGroupId(groupId);
+    }
+
+    @Override
+    public List<Child> findByParentId(Long parentId) {
+        return childRepo.findByParentId(parentId);
+    }
 
 }
